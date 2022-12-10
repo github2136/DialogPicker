@@ -41,24 +41,24 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
     }
 
     fun setData(data: MutableList<IDataLevel>) {
-        Log.e("TAG", "setData: ${data.joinToString { it.getText() }}")
         selectData.clear()
-        selectData.addAll(data)
-
         selectIndex.clear()
-        level = selectData.lastIndex
+        level = data.lastIndex
         var list: MutableList<IDataLevel>? = dataLevel
-        for (d in selectData) {
+        for (d in data) {
             list?.apply {
                 val i = indexOfFirst { it.getId() == d.getId() }
                 selectIndex.add(i)
                 list = get(i).getChild()
+                selectData.add(get(i))
             }
         }
     }
 
     fun show(manager: FragmentManager) {
-        show(manager, className)
+        if (!this.isAdded) {
+            show(manager, className)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -76,8 +76,14 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
         btnConfirm.setOnClickListener(this)
         rvList.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         llTitle.post {
-            selectData.forEachIndexed { index, item ->
-                addTitle(inflater, item, index)
+            var list: MutableList<IDataLevel>? = dataLevel
+            selectData.forEachIndexed { i, item ->
+                list?.apply {
+                    val data = first { item.getId() == it.getId() }
+                    val index = indexOfFirst { item.getId() == it.getId() }
+                    addTitle(inflater, data, i)
+                    list = get(index).getChild()
+                }
             }
             setTitleCheck(llTitle, level)
             hsvTitle.postDelayed({ hsvTitle.fullScroll(HorizontalScrollView.FOCUS_RIGHT) }, 100)
@@ -133,18 +139,19 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
     override fun onClick(v: View) {
         when (v.id) {
             R.id.ctvTop -> {
-                val currentLevel = v.tag as Int
-                level = currentLevel
+                val clickLevel = v.tag as Int
+                level = clickLevel
                 if (v is CheckedTextView) {
                     if (!v.isChecked) {
-                        setTitleCheck(llTitle, currentLevel)
+                        setTitleCheck(llTitle, clickLevel)
                         var list = dataLevel
                         for ((i, index) in selectIndex.withIndex()) {
-                            if (currentLevel == i) {
+                            Log.e("TAG", "setData1: ${selectIndex.joinToString { it.toString() }}")
+                            if (clickLevel == i) {
                                 adapter.selectPosition = index
                                 adapter.setData(list)
                             } else {
-                                list = list[i].getChild()!!
+                                list = list[index].getChild()!!
                             }
                         }
                     }

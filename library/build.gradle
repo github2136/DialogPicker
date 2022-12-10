@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
     id 'kotlin-kapt'
 }
 def lib = rootProject.ext.dependencies
@@ -30,13 +31,32 @@ android {
         jvmTarget = '1.8'
     }
 }
-
+afterEvaluate {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                artifact sourceJar // 增加上传源码的 task
+                afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) } //生成aar包
+                groupId = 'com.github.github2136.DataLevelPicker'
+                artifactId = 'library'
+                version = '1.0'
+            }
+        }
+    }
+}
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.getSrcDirs() // 源码路径
+    archiveClassifier = "sources"
+}
+artifacts {
+    archives sourceJar
+}
 dependencies {
     //Android库
-    compileOnly lib["android-appcompat"]
-    compileOnly lib["android-recyclerview"]
-    compileOnly lib["android-material"]
-    compileOnly lib["core-ktx"]
+    implementation lib["android-appcompat"]
+    implementation lib["android-recyclerview"]
+    implementation lib["android-material"]
+    implementation lib["core-ktx"]
 
     androidTestImplementation lib["android-test"]
     testImplementation lib["junit"]

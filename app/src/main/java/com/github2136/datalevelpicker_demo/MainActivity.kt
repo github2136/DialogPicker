@@ -50,9 +50,9 @@ class MainActivity : AppCompatActivity() {
                     dataLevelPickerDialog.setData(data)
                 } else {
                     val d = mutableListOf<IDataLevel>()
-                    d.add(City("E0", "E0", null))
-                    d.add(City("D01", "D01", null))
-                    d.add(City("C012", "C012", null))
+                    d.add(City("E0", "", null))
+                    d.add(City("D01", "", null))
+                    d.add(City("C012", "", null))
                     dataLevelPickerDialog.setData(d)
                 }
                 dataLevelPickerDialog.show(supportFragmentManager)
