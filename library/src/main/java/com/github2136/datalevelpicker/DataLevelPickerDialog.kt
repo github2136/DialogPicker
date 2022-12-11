@@ -4,7 +4,6 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.view.*
 import android.widget.CheckedTextView
@@ -26,7 +25,6 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
     private val className by lazy { javaClass.simpleName }
     protected lateinit var dataLevel: MutableList<IDataLevel>
     private var selectData = mutableListOf<IDataLevel>() //选中的集合
-    private var selectIndex = mutableListOf<Int>() //选中的集合下标
     private var level = 0 //当前操作等级
     private var onConfirm: ((data: MutableList<IDataLevel>) -> Unit)? = null
     private lateinit var hsvTitle: HorizontalScrollView
@@ -42,16 +40,12 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
 
     fun setData(data: MutableList<IDataLevel>) {
         selectData.clear()
-        selectIndex.clear()
         level = data.lastIndex
-        var list: MutableList<IDataLevel>? = dataLevel
+        var list = dataLevel
         for (d in data) {
-            list?.apply {
-                val i = indexOfFirst { it.getId() == d.getId() }
-                selectIndex.add(i)
-                list = get(i).getChild()
-                selectData.add(get(i))
-            }
+            val sd = list.first { it.getId() == d.getId() }
+            selectData.add(sd)
+            sd.getChild()?.apply { list = this }
         }
     }
 
@@ -65,7 +59,7 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
         dialog?.window?.apply {
             setGravity(Gravity.BOTTOM)
             decorView.setPadding(0)
-            setLayout(WindowManager.LayoutParams.MATCH_PARENT, dp2px(300f))
+            setLayout(WindowManager.LayoutParams.MATCH_PARENT, dp2px(350f))
             setBackgroundDrawable(ColorDrawable(Color.WHITE))
         }
         val view = inflater.inflate(R.layout.dialog_level_picker, container)
@@ -76,36 +70,29 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
         btnConfirm.setOnClickListener(this)
         rvList.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         llTitle.post {
-            var list: MutableList<IDataLevel>? = dataLevel
             selectData.forEachIndexed { i, item ->
-                list?.apply {
-                    val data = first { item.getId() == it.getId() }
-                    val index = indexOfFirst { item.getId() == it.getId() }
-                    addTitle(inflater, data, i)
-                    list = get(index).getChild()
-                }
+                addTitle(inflater, item, i)
             }
             setTitleCheck(llTitle, level)
             hsvTitle.postDelayed({ hsvTitle.fullScroll(HorizontalScrollView.FOCUS_RIGHT) }, 100)
         }
-
-        var list = dataLevel
-        for ((i, index) in selectIndex.withIndex()) {
-            if (level == i) {
-                adapter = DataLevelPickerAdapter(list).apply { selectPosition = index }
-            } else {
-                list = list[i].getChild()!!
-            }
-        }
-        if (!::adapter.isInitialized) {
+        if (selectData.isEmpty()) {
             adapter = DataLevelPickerAdapter(dataLevel)
+        } else {
+            var list = dataLevel
+            for ((i, item) in selectData.withIndex()) {
+                if (level == i) {
+                    adapter = DataLevelPickerAdapter(list).apply { selectId = item.getId() }
+                } else {
+                    item.getChild()?.apply { list = this }
+                }
+            }
         }
         adapter.setOnItemClickListener { position ->
             val item = adapter.getItem(position)!!
             if (level >= selectData.size) {
                 //添加title
                 selectData.add(item)
-                selectIndex.add(position)
                 addTitle(inflater, item, level)
                 setTitleCheck(llTitle, level)
                 hsvTitle.postDelayed({ hsvTitle.fullScroll(HorizontalScrollView.FOCUS_RIGHT) }, 100)
@@ -113,22 +100,20 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
                 //替换
                 (llTitle.getChildAt(level) as CheckedTextView).text = item.getText()
                 selectData[level] = item
-                selectIndex[level] = position
                 val childCount = llTitle.childCount
                 llTitle.removeViews(level + 1, childCount - (level + 1))
                 selectData = selectData.subList(0, level + 1)
-                selectIndex = selectIndex.subList(0, level + 1)
                 setTitleCheck(llTitle, level)
                 hsvTitle.postDelayed({ hsvTitle.fullScroll(HorizontalScrollView.FOCUS_RIGHT) }, 100)
             }
             item.getChild()?.apply {
                 //展示下一级
                 level++
-                adapter.selectPosition = -1
+                adapter.selectId = ""
                 adapter.setData(this)
             } ?: let {
                 //切换选中的最后一级
-                adapter.selectPosition = position
+                adapter.selectId = item.getId()
                 adapter.notifyDataSetChanged()
             }
         }
@@ -139,20 +124,19 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
     override fun onClick(v: View) {
         when (v.id) {
             R.id.ctvTop -> {
-                val clickLevel = v.tag as Int
+                val ctv = v as CheckedTextView
+                val clickLevel = ctv.tag as Int
                 level = clickLevel
-                if (v is CheckedTextView) {
-                    if (!v.isChecked) {
-                        setTitleCheck(llTitle, clickLevel)
-                        var list = dataLevel
-                        for ((i, index) in selectIndex.withIndex()) {
-                            Log.e("TAG", "setData1: ${selectIndex.joinToString { it.toString() }}")
-                            if (clickLevel == i) {
-                                adapter.selectPosition = index
-                                adapter.setData(list)
-                            } else {
-                                list = list[index].getChild()!!
-                            }
+                if (!v.isChecked) {
+                    setTitleCheck(llTitle, clickLevel)
+                    var list = dataLevel
+                    for ((i, item) in selectData.withIndex()) {
+                        if (clickLevel == i) {
+                            adapter.selectId = item.getId()
+                            adapter.setData(list)
+                            rvList.scrollToPosition(list.indexOfFirst { it.getId() == item.getId() })
+                        } else {
+                            item.getChild()?.apply { list = this }
                         }
                     }
                 }

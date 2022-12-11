@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 class DataLevelPickerAdapter(protected var list: MutableList<IDataLevel>? = null) : RecyclerView.Adapter<VH>() {
     protected lateinit var mLayoutInflater: LayoutInflater
 
-    var selectPosition = -1 //选中的项
+    var selectId = "" //选中的项
     private var selectColor: Int = 0 //选中颜色
     private var unSelectColor: Int = 0 //未选中颜色
 
@@ -35,7 +35,7 @@ class DataLevelPickerAdapter(protected var list: MutableList<IDataLevel>? = null
         list?.get(position)?.let { item ->
             holder.getView<CheckedTextView>(R.id.ctvItem)?.apply {
                 text = item.getText()
-                if (selectPosition == position) {
+                if (selectId == item.getId()) {
                     setTextColor(selectColor)
                     setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_dlp_check, 0)
                 } else {

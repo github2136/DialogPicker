@@ -20,15 +20,15 @@ class MainActivity : AppCompatActivity() {
                     repeat(8) { j ->
                         val l1 = mutableListOf<City>()
                         repeat(10) { i ->
-                            l1.add(City("A$n$l$k$j$i", "A$n$l$k$j$i", null))
+                            l1.add(City("E$n$l$k$j$i", "E$n$l$k$j$i", null))
                         }
-                        l2.add(City("B$n$l$k$j", "B$n$l$k$j", l1))
+                        l2.add(City("D$n$l$k$j", "D$n$l$k$j", l1))
                     }
                     l3.add(City("C$n$l$k", "C$n$l$k", l2))
                 }
-                l4.add(City("D$n$l", "D$n$l", l3))
+                l4.add(City("B$n$l", "B$n$l", l3))
             }
-            l5.add(City("E$n", "E$n", l4))
+            l5.add(City("A$n", "A$n", l4))
         }
 
         DataLevelPickerDialog(l5) { data ->
@@ -50,8 +50,8 @@ class MainActivity : AppCompatActivity() {
                     dataLevelPickerDialog.setData(data)
                 } else {
                     val d = mutableListOf<IDataLevel>()
-                    d.add(City("E0", "", null))
-                    d.add(City("D01", "", null))
+                    d.add(City("A0", "", null))
+                    d.add(City("B01", "", null))
                     d.add(City("C012", "", null))
                     dataLevelPickerDialog.setData(d)
                 }

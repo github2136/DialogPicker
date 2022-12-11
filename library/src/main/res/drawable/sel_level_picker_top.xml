@@ -2,7 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_checked="true">
         <ripple android:color="#4D000000">
-            <item android:left="-5dp" android:right="-5dp" android:top="-5dp">
+            <item android:left="-6dp" android:right="-6dp" android:top="-6dp">
                 <shape>
                     <padding android:bottom="4dp" android:left="8dp" android:right="8dp" android:top="4dp" />
                     <stroke android:width="5dp" android:color="@color/colorDlpPrimary" />
@@ -12,7 +12,7 @@
     </item>
     <item>
         <ripple android:color="#4D000000">
-            <item android:left="-5dp" android:right="-5dp" android:top="-5dp">
+            <item android:left="-6dp" android:right="-6dp" android:top="-6dp">
                 <shape>
                     <padding android:bottom="4dp" android:left="8dp" android:right="8dp" android:top="4dp" />
                     <stroke android:width="5dp" android:color="@android:color/transparent" />
