@@ -46,6 +46,9 @@ class MainActivity : AppCompatActivity() {
     fun onClick(view: View) {
         when (view.id) {
             R.id.btn1 -> {
+                dataLevelPickerDialog.show(supportFragmentManager)
+            }
+            R.id.btn2 -> {
                 if (::data.isInitialized) {
                     dataLevelPickerDialog.setData(data)
                 } else {

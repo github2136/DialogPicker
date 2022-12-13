@@ -1,5 +1,6 @@
 package com.github2136.datalevelpicker
 
+import android.content.DialogInterface
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -31,6 +32,7 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
     private lateinit var llTitle: LinearLayout
     private lateinit var rvList: RecyclerView
     private lateinit var btnConfirm: TextView
+    private lateinit var btnCancel: TextView
     private lateinit var adapter: DataLevelPickerAdapter
 
     constructor(data: MutableList<IDataLevel>, onConfirm: (data: MutableList<IDataLevel>) -> Unit) : this() {
@@ -67,7 +69,12 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
         llTitle = view.findViewById(R.id.llTitle)
         rvList = view.findViewById(R.id.rvList)
         btnConfirm = view.findViewById(R.id.btnConfirm)
+        btnCancel = view.findViewById(R.id.btnCancel)
         btnConfirm.setOnClickListener(this)
+        btnCancel.setOnClickListener(this)
+        if (selectData.isEmpty()) {
+            btnConfirm.isEnabled = false
+        }
         rvList.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         llTitle.post {
             selectData.forEachIndexed { i, item ->
@@ -90,6 +97,7 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
         }
         adapter.setOnItemClickListener { position ->
             val item = adapter.getItem(position)!!
+            btnConfirm.isEnabled = true
             if (level >= selectData.size) {
                 //添加title
                 selectData.add(item)
@@ -145,9 +153,17 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
                 onConfirm?.invoke(selectData.toMutableList())
                 dismiss()
             }
+            R.id.btnCancel -> {
+                dismiss()
+            }
         }
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        selectData.clear()
+        level = 0
+    }
     /**
      * 添加标题
      */
