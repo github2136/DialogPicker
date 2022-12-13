@@ -42,7 +42,7 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
 
     fun setData(data: MutableList<IDataLevel>) {
         selectData.clear()
-        level = data.lastIndex
+        level = if (data.isEmpty()) 0 else data.lastIndex
         var list = dataLevel
         for (d in data) {
             val sd = list.first { it.getId() == d.getId() }
