@@ -8,9 +8,9 @@ import com.github2136.datalevelpicker.DataLevelPickerDialog
 import com.github2136.datalevelpicker.IDataLevel
 
 class MainActivity : AppCompatActivity() {
-    var selectData: MutableList<IDataLevel> = mutableListOf()
+    var selectData: MutableList<City> = mutableListOf()
     val dataLevelPickerDialog by lazy {
-        val l5 = mutableListOf<IDataLevel>()
+        val l5 = mutableListOf<City>()
         repeat(2) { n ->
             val l4 = mutableListOf<City>()
             repeat(4) { l ->
@@ -49,10 +49,10 @@ class MainActivity : AppCompatActivity() {
                 dataLevelPickerDialog.show(supportFragmentManager)
             }
             R.id.btn2 -> {
-                if (selectData.isEmpty()) {
+                if (selectData.isNotEmpty()) {
                     dataLevelPickerDialog.setData(selectData)
                 } else {
-                    val d = mutableListOf<IDataLevel>()
+                    val d = mutableListOf<City>()
                     d.add(City("A0", "", null))
                     d.add(City("B01", "", null))
                     d.add(City("C012", "", null))

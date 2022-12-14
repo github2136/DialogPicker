@@ -22,12 +22,12 @@ import androidx.recyclerview.widget.RecyclerView
  * Created by YB on 2022/12/5
  * 级联菜单选择
  */
-class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnClickListener {
+class DataLevelPickerDialog<T : IDataLevel> private constructor() : DialogFragment(), View.OnClickListener {
     private val className by lazy { javaClass.simpleName }
-    protected lateinit var dataLevel: MutableList<IDataLevel>
+    private var dataLevel: MutableList<IDataLevel> = mutableListOf()
     private var selectData = mutableListOf<IDataLevel>() //选中的集合
     private var level = 0 //当前操作等级
-    private var onConfirm: ((data: MutableList<IDataLevel>) -> Unit)? = null
+    private var onConfirm: ((data: MutableList<T>) -> Unit)? = null
     private lateinit var hsvTitle: HorizontalScrollView
     private lateinit var llTitle: LinearLayout
     private lateinit var rvList: RecyclerView
@@ -35,12 +35,12 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
     private lateinit var btnCancel: TextView
     private lateinit var adapter: DataLevelPickerAdapter
 
-    constructor(data: MutableList<IDataLevel>, onConfirm: (data: MutableList<IDataLevel>) -> Unit) : this() {
-        dataLevel = data
+    constructor(data: MutableList<T>, onConfirm: (data: MutableList<T>) -> Unit) : this() {
+        dataLevel.addAll(data)
         this.onConfirm = onConfirm
     }
 
-    fun setData(data: MutableList<IDataLevel>) {
+    fun setData(data: MutableList<T>) {
         selectData.clear()
         level = if (data.isEmpty()) 0 else data.lastIndex
         var list = dataLevel
@@ -150,7 +150,7 @@ class DataLevelPickerDialog private constructor() : DialogFragment(), View.OnCli
                 }
             }
             R.id.btnConfirm -> {
-                onConfirm?.invoke(selectData.toMutableList())
+                onConfirm?.invoke(selectData.toMutableList() as MutableList<T>)
                 dismiss()
             }
             R.id.btnCancel -> {
