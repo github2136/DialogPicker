@@ -4,7 +4,6 @@
     android:id="@+id/ctvItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
     android:drawableTint="@color/colorDlpPrimary"
     android:gravity="center_vertical"
     android:paddingLeft="12dp"
