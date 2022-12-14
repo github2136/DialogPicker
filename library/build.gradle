@@ -53,8 +53,8 @@ artifacts {
 }
 dependencies {
     //Android库
-    compileOnly lib["android-appcompat"]
-    compileOnly lib["android-recyclerview"]
+    implementation lib["android-appcompat"]
+    implementation lib["android-recyclerview"]
     implementation lib["android-material"]
     implementation lib["core-ktx"]
 
