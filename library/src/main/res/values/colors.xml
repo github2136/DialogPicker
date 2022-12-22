@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="colorDlpPrimary">#108EE9</color>
-    <color name="colorDlpRipple">#4D000000</color>
-    <color name="colorDlpText">#DE000000</color>
-    <color name="colorDlpTextDisable">#61000000</color>
-
-</resources>

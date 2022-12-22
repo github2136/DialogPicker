@@ -1,5 +1,6 @@
 package com.github2136.datalevelpicker
 
+import android.content.Context
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
@@ -7,22 +8,28 @@ import android.view.ViewGroup
 import android.widget.CheckedTextView
 import androidx.annotation.IdRes
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
 
 /**
  * Created by YB on 2022/12/6
  */
 class DataLevelPickerAdapter(protected var list: MutableList<IDataLevel>? = null) : RecyclerView.Adapter<VH>() {
     protected lateinit var mLayoutInflater: LayoutInflater
-
+    private lateinit var context: Context
     var selectId = "" //选中的项
-    private var selectColor: Int = 0 //选中颜色
-    private var unSelectColor: Int = 0 //未选中颜色
+    private val selectColor by lazy {
+        //选中颜色
+        MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, 0)
+    }
+    private val unSelectColor by lazy {
+        //未选中颜色
+        MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnSurface, 0)
+    }
 
     protected var itemClickListener: ((Int) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        selectColor = parent.context.resources.getColor(R.color.colorDlpPrimary, null)
-        unSelectColor = parent.context.resources.getColor(R.color.colorDlpText, null)
+        context = parent.context
 
         if (!::mLayoutInflater.isInitialized) {
             mLayoutInflater = LayoutInflater.from(parent.context)

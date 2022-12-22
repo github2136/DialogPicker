@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_checked="true">
-        <ripple android:color="@color/colorDlpRipple">
+        <layer-list>
             <item android:left="-6dp" android:right="-6dp" android:top="-6dp">
                 <shape>
                     <padding android:bottom="4dp" android:left="8dp" android:right="8dp" android:top="4dp" />
-                    <stroke android:width="5dp" android:color="@color/colorDlpPrimary" />
+                    <stroke android:width="5dp" android:color="?attr/colorPrimary" />
                 </shape>
             </item>
-        </ripple>
+        </layer-list>
     </item>
     <item>
-        <ripple android:color="@color/colorDlpRipple">
+        <layer-list>
             <item android:left="-6dp" android:right="-6dp" android:top="-6dp">
                 <shape>
                     <padding android:bottom="4dp" android:left="8dp" android:right="8dp" android:top="4dp" />
                     <stroke android:width="5dp" android:color="@android:color/transparent" />
                 </shape>
             </item>
-        </ripple>
+        </layer-list>
     </item>
 </selector>
