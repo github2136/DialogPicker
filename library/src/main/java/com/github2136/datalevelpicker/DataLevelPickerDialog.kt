@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
  * Created by YB on 2022/12/5
  * 级联菜单选择
  */
-class DataLevelPickerDialog<T : IDataLevel> private constructor() : DialogFragment(), View.OnClickListener {
+class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, onConfirm: (data: MutableList<T>) -> Unit) : DialogFragment(), View.OnClickListener {
     private val className by lazy { javaClass.simpleName }
     private var dataLevel: MutableList<IDataLevel> = mutableListOf()
     private var selectData = mutableListOf<IDataLevel>() //选中的集合
@@ -35,7 +35,7 @@ class DataLevelPickerDialog<T : IDataLevel> private constructor() : DialogFragme
     private lateinit var btnCancel: TextView
     private lateinit var adapter: DataLevelPickerAdapter
 
-    constructor(data: MutableList<T>, onConfirm: (data: MutableList<T>) -> Unit) : this() {
+    init {
         dataLevel.addAll(data)
         this.onConfirm = onConfirm
     }
