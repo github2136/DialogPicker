@@ -12,9 +12,10 @@ import com.google.android.material.color.MaterialColors
 
 /**
  * Created by YB on 2022/12/6
+ * 多级联动选择
  */
-class DataLevelPickerAdapter(protected var list: MutableList<IDataLevel>? = null) : RecyclerView.Adapter<VH>() {
-    protected lateinit var mLayoutInflater: LayoutInflater
+class DataLevelPickerAdapter(var list: MutableList<IDataLevel>? = null) : RecyclerView.Adapter<VH>() {
+    lateinit var mLayoutInflater: LayoutInflater
     private lateinit var context: Context
     var selectId = "" //选中的项
     private val selectColor by lazy {

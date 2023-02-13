@@ -23,6 +23,6 @@ dependencyResolutionManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name = "DataLevelPicker"
+rootProject.name = "DialogPicker"
 include ':app'
 include ':library'
