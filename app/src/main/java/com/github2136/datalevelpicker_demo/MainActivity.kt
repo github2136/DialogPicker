@@ -3,9 +3,10 @@ package com.github2136.datalevelpicker_demo
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github2136.datalevelpicker.DataLevelPickerDialog
-import com.github2136.datalevelpicker.IDataLevel
+import com.github2136.datetime.DatePickerDialog
 
 class MainActivity : AppCompatActivity() {
     var selectData: MutableList<City> = mutableListOf()
@@ -37,6 +38,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
     lateinit var tv: TextView
+    val datePickerDialog by lazy {
+        DatePickerDialog {
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -59,6 +66,18 @@ class MainActivity : AppCompatActivity() {
                     dataLevelPickerDialog.setData(d)
                 }
                 dataLevelPickerDialog.show(supportFragmentManager)
+            }
+            R.id.btn3 -> {
+                datePickerDialog.startLimit = null
+                datePickerDialog.endLimit = null
+                datePickerDialog.date = null
+                datePickerDialog.show(supportFragmentManager)
+            }
+            R.id.btn4 -> {
+                datePickerDialog.startLimit = "2022-12-01"
+                datePickerDialog.endLimit = "2023-02-01"
+                datePickerDialog.date = "2023-01-01"
+                datePickerDialog.show(supportFragmentManager)
             }
         }
     }

@@ -17,10 +17,12 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import com.github2136.Util
 
 /**
  * Created by YB on 2022/12/5
  * 级联菜单选择
+ * @param data 多级数据
  */
 class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, onConfirm: (data: MutableList<T>) -> Unit) : DialogFragment(), View.OnClickListener {
     private val className by lazy { javaClass.simpleName }
@@ -28,11 +30,11 @@ class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, on
     private var selectData = mutableListOf<IDataLevel>() //选中的集合
     private var level = 0 //当前操作等级
     private var onConfirm: ((data: MutableList<T>) -> Unit)? = null
-    private lateinit var hsvTitle: HorizontalScrollView
-    private lateinit var llTitle: LinearLayout
-    private lateinit var rvList: RecyclerView
-    private lateinit var btnConfirm: TextView
-    private lateinit var btnCancel: TextView
+    private lateinit var hsvTitle: HorizontalScrollView//顶部选中滚动控件
+    private lateinit var llTitle: LinearLayout//顶部选择
+    private lateinit var rvList: RecyclerView//显示当前等级数据
+    private lateinit var btnConfirm: TextView//确认按钮
+    private lateinit var btnCancel: TextView//取消按钮
     private lateinit var adapter: DataLevelPickerAdapter
 
     init {
@@ -61,7 +63,7 @@ class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, on
         dialog?.window?.apply {
             setGravity(Gravity.BOTTOM)
             decorView.setPadding(0)
-            setLayout(WindowManager.LayoutParams.MATCH_PARENT, dp2px(350f))
+            setLayout(WindowManager.LayoutParams.MATCH_PARENT, Util.dp2px(350f))
             setBackgroundDrawable(ColorDrawable(Color.WHITE))
         }
         val view = inflater.inflate(R.layout.dialog_level_picker, container)
@@ -186,6 +188,4 @@ class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, on
             }
         }
     }
-
-    private fun dp2px(dp: Float) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, Resources.getSystem().displayMetrics).toInt()
 }
