@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github2136.datalevelpicker.DataLevelPickerDialog
 import com.github2136.datetime.DatePickerDialog
+import com.github2136.datetime.DateRangPickerDialog
 
 class MainActivity : AppCompatActivity() {
     var selectData: MutableList<City> = mutableListOf()
@@ -40,7 +41,13 @@ class MainActivity : AppCompatActivity() {
     lateinit var tv: TextView
     val datePickerDialog by lazy {
         DatePickerDialog {
-            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            tv.text = it
+        }
+    }
+
+    val dateRangPickerDialog by lazy {
+        DateRangPickerDialog { start, end ->
+            tv.text = "$start $end"
         }
     }
 
@@ -78,6 +85,15 @@ class MainActivity : AppCompatActivity() {
                 datePickerDialog.endLimit = "2023-02-01"
                 datePickerDialog.date = "2023-01-01"
                 datePickerDialog.show(supportFragmentManager)
+            }
+            R.id.btn5 -> {
+                dateRangPickerDialog.setLimitDate(null,null)
+                dateRangPickerDialog.show(supportFragmentManager)
+            }
+            R.id.btn6 -> {
+                dateRangPickerDialog.setLimitDate("2023-01-01","2023-02-01")
+                dateRangPickerDialog.setDate("2023-01-02","2023-01-05")
+                dateRangPickerDialog.show(supportFragmentManager)
             }
         }
     }

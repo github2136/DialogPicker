@@ -22,4 +22,10 @@ object Util {
             null
         }
     }
+
+    fun date2str(date: Date, pattern: String): String {
+        val sdf = SimpleDateFormat(pattern, Locale.getDefault())
+        sdf.timeZone = TimeZone.getTimeZone(TimeZone.getDefault().id)
+        return sdf.format(date)
+    }
 }
