@@ -31,7 +31,6 @@ class DataLevelPickerAdapter(var list: MutableList<IDataLevel>? = null) : Recycl
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         context = parent.context
-
         if (!::mLayoutInflater.isInitialized) {
             mLayoutInflater = LayoutInflater.from(parent.context)
         }

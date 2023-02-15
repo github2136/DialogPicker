@@ -1,5 +1,6 @@
 package com.github2136.datetime
 
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -19,14 +20,16 @@ import kotlin.math.min
 /**
  * Created by yb on 2023/2/13
  * 日期范围
+ * @param title 显示标题
+ * @param startLimit 开始范围
+ * @param endLimit 结束范围
  */
 class DateRangPickerDialog constructor(
-    var startDate: String? = null, var endDate: String? = null,
     var title: String = "请选择时间范围", startLimit: String? = null, endLimit: String? = null, onConfirm: (start: String, end: String) -> Unit
 ) : DialogFragment(), View.OnClickListener, DatePicker.OnDateChangedListener {
     private val className by lazy { javaClass.simpleName }
-    private val startCalendar: Calendar by lazy { Calendar.getInstance() }
-    private val endCalendar: Calendar by lazy { Calendar.getInstance() }
+    private lateinit var startCalendar: Calendar
+    private lateinit var endCalendar: Calendar
 
     private var startLimitCalendar: Calendar? = null
     private var endLimitCalendar: Calendar? = null
@@ -40,22 +43,9 @@ class DateRangPickerDialog constructor(
     private lateinit var dpDate: DatePicker
 
     init {
-        startLimit?.apply {
-            val c = Calendar.getInstance()
-            c.time = Util.str2date(this, Util.DATE_PATTERN_YMD)
-            startLimitCalendar = c
-        }
-        endLimit?.apply {
-            val c = Calendar.getInstance()
-            c.time = Util.str2date(this, Util.DATE_PATTERN_YMD)
-            endLimitCalendar = c
-        }
-        startDate?.apply {
-            startCalendar.time = Util.str2date(this, Util.DATE_PATTERN_YMD)
-        }
-        endDate?.apply {
-            endCalendar.time = Util.str2date(this, Util.DATE_PATTERN_YMD)
-        }
+        startCalendar = Calendar.getInstance()
+        endCalendar = Calendar.getInstance()
+        setLimit(startLimit, endLimit)
         this.onConfirm = onConfirm
     }
 
@@ -82,13 +72,11 @@ class DateRangPickerDialog constructor(
         btnEndDate.setOnClickListener(this)
 
         tvTitle.text = title
-        tvTitle.post {
-            btnStartDate.text = Util.date2str(startCalendar.time, Util.DATE_PATTERN_YMD)
-            btnEndDate.text = Util.date2str(endCalendar.time, Util.DATE_PATTERN_YMD)
-            btnStartDate.isChecked = true
-            btnEndDate.isChecked = false
-            setDpDate()
-        }
+        btnStartDate.text = Util.date2str(startCalendar.time, Util.DATE_PATTERN_YMD)
+        btnEndDate.text = Util.date2str(endCalendar.time, Util.DATE_PATTERN_YMD)
+        btnStartDate.isChecked = true
+        btnEndDate.isChecked = false
+        setDpDate()
         return view
     }
 
@@ -130,78 +118,72 @@ class DateRangPickerDialog constructor(
         }
     }
 
-    fun setDate(start: String, end: String) {
-        startCalendar.apply {
-            time = Util.str2date(start, Util.DATE_PATTERN_YMD)
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-        }
-        endCalendar.apply {
-            time = Util.str2date(end, Util.DATE_PATTERN_YMD)
-            set(Calendar.HOUR_OF_DAY, 23)
-            set(Calendar.MINUTE, 59)
-            set(Calendar.SECOND, 59)
-        }
-    }
-
-    fun setLimitDate(start: String?, end: String?) {
-        if (start == null) {
+    fun setLimit(startLimit: String?, endLimit: String?) {
+        if (startLimit != null) {
+            startLimit.apply {
+                Util.str2date(this, Util.DATE_PATTERN_YMD)?.apply {
+                    startLimitCalendar?.also { it.time = this } ?: run { startLimitCalendar = Calendar.getInstance().also { it.time = this } }
+                }
+            }
+        } else {
             startLimitCalendar = null
-        } else {
-            if (startLimitCalendar == null) {
-                startLimitCalendar = Calendar.getInstance()
-            }
-            startLimitCalendar!!.apply {
-                time = Util.str2date(start, Util.DATE_PATTERN_YMD)
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-            }
         }
-        if (end == null) {
-            endLimitCalendar = null
+        if (endLimit != null) {
+            endLimit.apply {
+                Util.str2date(this, Util.DATE_PATTERN_YMD)?.apply {
+                    endLimitCalendar?.also { it.time = this } ?: run { endLimitCalendar = Calendar.getInstance().also { it.time = this } }
+                }
+            }
         } else {
-            if (endLimitCalendar == null) {
-                endLimitCalendar = Calendar.getInstance()
-            }
-            endLimitCalendar!!.apply {
-                time = Util.str2date(end, Util.DATE_PATTERN_YMD)
-                set(Calendar.HOUR_OF_DAY, 23)
-                set(Calendar.MINUTE, 59)
-                set(Calendar.SECOND, 59)
-            }
+            endLimitCalendar = null
         }
     }
 
-    fun show(manager: FragmentManager) {
+    fun show(start: String?, end: String?, manager: FragmentManager) {
         if (!this.isAdded) {
+            if (start != null) {
+                startCalendar.apply {
+                    time = Util.str2date(start, Util.DATE_PATTERN_YMD)
+                }
+            } else {
+                startCalendar = Calendar.getInstance()
+            }
+            if (end != null) {
+                endCalendar.apply {
+                    time = Util.str2date(end, Util.DATE_PATTERN_YMD)
+                }
+            } else {
+                endCalendar = Calendar.getInstance()
+            }
             show(manager, className)
         }
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        btnStartDate.isChecked = true
+        btnEndDate.isChecked = false
+        super.onDismiss(dialog)
+    }
     /**
      * 设置控件时间及限制范围
      */
     private fun setDpDate() {
         if (btnStartDate.isChecked) {
             dpDate.init(startCalendar.get(Calendar.YEAR), startCalendar.get(Calendar.MONTH), startCalendar.get(Calendar.DAY_OF_MONTH), this)
-            if (startLimitCalendar != null && endLimitCalendar != null) {
-                dpDate.minDate = startLimitCalendar!!.timeInMillis
-                dpDate.maxDate = min(endLimitCalendar!!.timeInMillis, endCalendar.timeInMillis)
-            } else {
-                dpDate.minDate = 0
+            dpDate.minDate = startLimitCalendar?.timeInMillis ?: 0
+            endLimitCalendar?.apply {
+                dpDate.maxDate = min(this.timeInMillis, endCalendar.timeInMillis)
+            } ?: run {
                 dpDate.maxDate = endCalendar.timeInMillis
             }
         } else {
             dpDate.init(endCalendar.get(Calendar.YEAR), endCalendar.get(Calendar.MONTH), endCalendar.get(Calendar.DAY_OF_MONTH), this)
-            if (startLimitCalendar != null && endLimitCalendar != null) {
-                dpDate.minDate = max(startLimitCalendar!!.timeInMillis, endCalendar.timeInMillis)
-                dpDate.maxDate = endLimitCalendar!!.timeInMillis
-            } else {
+            startLimitCalendar?.apply {
+                dpDate.minDate = max(this.timeInMillis, endCalendar.timeInMillis)
+            } ?: run {
                 dpDate.minDate = startCalendar.timeInMillis
-                dpDate.maxDate = Long.MAX_VALUE
             }
+            dpDate.maxDate = endLimitCalendar?.timeInMillis ?: Long.MAX_VALUE
         }
     }
 }

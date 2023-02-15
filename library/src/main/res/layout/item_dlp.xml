@@ -10,6 +10,6 @@
     android:paddingTop="8dp"
     android:paddingRight="12dp"
     android:paddingBottom="8dp"
-    android:textSize="18sp"
+    android:textSize="16sp"
     tools:drawableRight="@drawable/ic_dlp_check"
     tools:text="text" />

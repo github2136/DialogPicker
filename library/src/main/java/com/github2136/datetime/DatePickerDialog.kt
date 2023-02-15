@@ -16,18 +16,17 @@ import java.util.*
 /**
  * Created by yb on 2023/2/13
  * 日期单选
- * @param date 默认选择日期
  * @param title 显示标题
  * @param startLimit 开始范围
  * @param endLimit 结束范围
  */
 class DatePickerDialog constructor(
-    var date: String? = null, var title: String = "请选择日期",
-    var startLimit: String? = null, var endLimit: String? = null, onConfirm: (date: String) -> Unit
-) : DialogFragment(),
-    View.OnClickListener {
+    var title: String = "请选择日期", startLimit: String? = null, endLimit: String? = null, onConfirm: (date: String) -> Unit
+) : DialogFragment(), View.OnClickListener {
     private val className by lazy { javaClass.simpleName }
-    private val dateCalender by lazy { Calendar.getInstance() }
+    private var dateCalender: Calendar
+    private var startLimitCalendar: Calendar? = null
+    private var endLimitCalendar: Calendar? = null
     private var onConfirm: ((data: String) -> Unit)? = null
 
     private lateinit var tvTitle: TextView
@@ -36,6 +35,8 @@ class DatePickerDialog constructor(
     private lateinit var btnCancel: TextView
 
     init {
+        dateCalender = Calendar.getInstance()
+        setLimit(startLimit, endLimit)
         this.onConfirm = onConfirm
     }
 
@@ -52,31 +53,50 @@ class DatePickerDialog constructor(
         btnConfirm = view.findViewById(R.id.btnConfirm)
         btnCancel = view.findViewById(R.id.btnCancel)
         dpDate.descendantFocusability = DatePicker.FOCUS_BLOCK_DESCENDANTS
-        date?.apply {
-            Util.str2date(this, Util.DATE_PATTERN_YMD)?.apply {
-                dateCalender.time = this
-            }
-        }
+
         dpDate.init(dateCalender.get(Calendar.YEAR), dateCalender.get(Calendar.MONTH), dateCalender.get(Calendar.DAY_OF_MONTH), null)
         btnConfirm.setOnClickListener(this)
         btnCancel.setOnClickListener(this)
         tvTitle.text = title
-        startLimit?.apply {
-            Util.str2date(this, Util.DATE_PATTERN_YMD)?.time?.apply {
-                dpDate.minDate = this
-            }
-        }
-        endLimit?.apply {
-            Util.str2date(this, Util.DATE_PATTERN_YMD)?.time?.apply {
-                dpDate.maxDate = this
-            }
-        }
+
+        dpDate.minDate = startLimitCalendar?.timeInMillis ?: 0
+        dpDate.maxDate = endLimitCalendar?.timeInMillis ?: Long.MAX_VALUE
         return view
     }
 
-    fun show(manager: FragmentManager) {
+    fun show(date: String?, manager: FragmentManager) {
         if (!this.isAdded) {
-            show(manager, className)
+            if (date != null) {
+                date.apply {
+                    Util.str2date(this, Util.DATE_PATTERN_YMD)?.apply {
+                        dateCalender.time = this
+                    }
+                }
+            } else {
+                dateCalender = Calendar.getInstance()
+            }
+            super.show(manager, className)
+        }
+    }
+
+    fun setLimit(startLimit: String?, endLimit: String?) {
+        if (startLimit != null) {
+            startLimit.apply {
+                Util.str2date(this, Util.DATE_PATTERN_YMD)?.apply {
+                    startLimitCalendar?.also { it.time = this } ?: run { startLimitCalendar = Calendar.getInstance().also { it.time = this } }
+                }
+            }
+        } else {
+            startLimitCalendar = null
+        }
+        if (endLimit != null) {
+            endLimit.apply {
+                Util.str2date(this, Util.DATE_PATTERN_YMD)?.apply {
+                    endLimitCalendar?.also { it.time = this } ?: run { endLimitCalendar = Calendar.getInstance().also { it.time = this } }
+                }
+            }
+        } else {
+            endLimitCalendar = null
         }
     }
 
@@ -91,5 +111,4 @@ class DatePickerDialog constructor(
             }
         }
     }
-
 }

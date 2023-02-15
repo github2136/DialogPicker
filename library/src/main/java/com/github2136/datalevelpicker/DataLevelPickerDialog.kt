@@ -1,11 +1,9 @@
 package com.github2136.datalevelpicker
 
 import android.content.DialogInterface
-import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.*
 import android.widget.CheckedTextView
 import android.widget.HorizontalScrollView
@@ -30,11 +28,11 @@ class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, on
     private var selectData = mutableListOf<IDataLevel>() //选中的集合
     private var level = 0 //当前操作等级
     private var onConfirm: ((data: MutableList<T>) -> Unit)? = null
-    private lateinit var hsvTitle: HorizontalScrollView//顶部选中滚动控件
-    private lateinit var llTitle: LinearLayout//顶部选择
-    private lateinit var rvList: RecyclerView//显示当前等级数据
-    private lateinit var btnConfirm: TextView//确认按钮
-    private lateinit var btnCancel: TextView//取消按钮
+    private lateinit var hsvTitle: HorizontalScrollView //顶部选中滚动控件
+    private lateinit var llTitle: LinearLayout //顶部选择
+    private lateinit var rvList: RecyclerView //显示当前等级数据
+    private lateinit var btnConfirm: TextView //确认按钮
+    private lateinit var btnCancel: TextView //取消按钮
     private lateinit var adapter: DataLevelPickerAdapter
 
     init {
@@ -42,19 +40,18 @@ class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, on
         this.onConfirm = onConfirm
     }
 
-    fun setData(data: MutableList<T>) {
-        selectData.clear()
-        level = if (data.isEmpty()) 0 else data.lastIndex
-        var list = dataLevel
-        for (d in data) {
-            val sd = list.first { it.getId() == d.getId() }
-            selectData.add(sd)
-            sd.getChild()?.apply { list = this }
-        }
-    }
-
-    fun show(manager: FragmentManager) {
+    fun show(data: MutableList<T>?, manager: FragmentManager) {
         if (!this.isAdded) {
+            selectData.clear()
+            data?.let {
+                level = if (data.isEmpty()) 0 else data.lastIndex
+                var list = dataLevel
+                for (d in data) {
+                    val sd = list.first { it.getId() == d.getId() }
+                    selectData.add(sd)
+                    sd.getChild()?.apply { list = this }
+                }
+            }
             show(manager, className)
         }
     }

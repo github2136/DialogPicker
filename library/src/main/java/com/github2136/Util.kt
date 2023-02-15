@@ -9,6 +9,7 @@ import java.util.*
 object Util {
     const val DATE_PATTERN_YMDHM = "yyyy-MM-dd HH:mm"
     const val DATE_PATTERN_YMD = "yyyy-MM-dd"
+    const val DATE_PATTERN_HM = "HH:mm"
 
     fun dp2px(dp: Float) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, Resources.getSystem().displayMetrics).toInt()
 
