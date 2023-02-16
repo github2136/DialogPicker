@@ -28,8 +28,8 @@ class DateRangPickerDialog constructor(
     var title: String = "请选择时间范围", startLimit: String? = null, endLimit: String? = null, onConfirm: (start: String, end: String) -> Unit
 ) : DialogFragment(), View.OnClickListener, DatePicker.OnDateChangedListener {
     private val className by lazy { javaClass.simpleName }
-    private lateinit var startCalendar: Calendar
-    private lateinit var endCalendar: Calendar
+    private var startCalendar: Calendar
+    private var endCalendar: Calendar
 
     private var startLimitCalendar: Calendar? = null
     private var endLimitCalendar: Calendar? = null

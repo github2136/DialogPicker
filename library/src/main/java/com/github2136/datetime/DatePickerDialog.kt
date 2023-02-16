@@ -22,7 +22,7 @@ import java.util.*
  */
 class DatePickerDialog constructor(
     var title: String = "请选择日期", startLimit: String? = null, endLimit: String? = null, onConfirm: (date: String) -> Unit
-) : DialogFragment(), View.OnClickListener {
+) : DialogFragment(), View.OnClickListener, DatePicker.OnDateChangedListener {
     private val className by lazy { javaClass.simpleName }
     private var dateCalender: Calendar
     private var startLimitCalendar: Calendar? = null
@@ -54,7 +54,7 @@ class DatePickerDialog constructor(
         btnCancel = view.findViewById(R.id.btnCancel)
         dpDate.descendantFocusability = DatePicker.FOCUS_BLOCK_DESCENDANTS
 
-        dpDate.init(dateCalender.get(Calendar.YEAR), dateCalender.get(Calendar.MONTH), dateCalender.get(Calendar.DAY_OF_MONTH), null)
+        dpDate.init(dateCalender.get(Calendar.YEAR), dateCalender.get(Calendar.MONTH), dateCalender.get(Calendar.DAY_OF_MONTH), this)
         btnConfirm.setOnClickListener(this)
         btnCancel.setOnClickListener(this)
         tvTitle.text = title
@@ -103,12 +103,18 @@ class DatePickerDialog constructor(
     override fun onClick(v: View) {
         when (v.id) {
             R.id.btnConfirm -> {
-                onConfirm?.invoke(String.format("%04d-%02d-%02d", dpDate.year, dpDate.month + 1, dpDate.dayOfMonth))
+                onConfirm?.invoke(Util.date2str(dateCalender.time, Util.DATE_PATTERN_YMD))
                 dismiss()
             }
             R.id.btnCancel -> {
                 dismiss()
             }
         }
+    }
+
+    override fun onDateChanged(view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int) {
+        dateCalender.set(Calendar.YEAR, year)
+        dateCalender.set(Calendar.MONTH, monthOfYear)
+        dateCalender.set(Calendar.DAY_OF_MONTH, dayOfMonth)
     }
 }

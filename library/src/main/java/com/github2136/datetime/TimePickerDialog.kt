@@ -102,7 +102,7 @@ class TimePickerDialog(
     override fun onClick(v: View) {
         when (v.id) {
             R.id.btnConfirm -> {
-                onConfirm?.invoke(String.format("%02d:%02d", tpDate.hour, tpDate.minute))
+                onConfirm?.invoke(Util.date2str(dateCalender.time, Util.DATE_PATTERN_HM))
                 dismiss()
             }
             R.id.btnCancel -> {
@@ -126,5 +126,7 @@ class TimePickerDialog(
                 view.minute = get(Calendar.MINUTE)
             }
         }
+        dateCalender.set(Calendar.HOUR_OF_DAY, view.hour)
+        dateCalender.set(Calendar.MINUTE, view.minute)
     }
 }

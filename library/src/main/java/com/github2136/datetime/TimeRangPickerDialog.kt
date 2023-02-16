@@ -14,7 +14,6 @@ import com.github2136.Util
 import com.github2136.datalevelpicker.R
 import com.google.android.material.button.MaterialButton
 import java.util.*
-import kotlin.math.max
 
 /**
  * Created by yb on 2023/2/13
@@ -24,8 +23,8 @@ class TimeRangPickerDialog(
     var title: String = "请选择时间范围", startLimit: String? = null, endLimit: String? = null, onConfirm: (start: String, end: String) -> Unit
 ) : DialogFragment(), View.OnClickListener, TimePicker.OnTimeChangedListener {
     private val className by lazy { javaClass.simpleName }
-    private lateinit var startCalendar: Calendar
-    private lateinit var endCalendar: Calendar
+    private var startCalendar: Calendar
+    private var endCalendar: Calendar
 
     private var startLimitCalendar: Calendar? = null
     private var endLimitCalendar: Calendar? = null
@@ -39,6 +38,8 @@ class TimeRangPickerDialog(
     private lateinit var tpDate: TimePicker
 
     init {
+        startCalendar = Calendar.getInstance()
+        endCalendar = Calendar.getInstance()
         setLimit(startLimit, endLimit)
         this.onConfirm = onConfirm
     }
@@ -60,6 +61,9 @@ class TimeRangPickerDialog(
         tpDate = view.findViewById(R.id.tpDate)
         //禁止编辑
         tpDate.descendantFocusability = TimePicker.FOCUS_BLOCK_DESCENDANTS
+        tpDate.setIs24HourView(true)
+        tpDate.hour = startCalendar.get(Calendar.HOUR_OF_DAY)
+        tpDate.minute = startCalendar.get(Calendar.MINUTE)
         btnConfirm.setOnClickListener(this)
         btnCancel.setOnClickListener(this)
         btnStartDate.setOnClickListener(this)
@@ -83,29 +87,53 @@ class TimeRangPickerDialog(
                     view.minute = get(Calendar.MINUTE)
                 }
             }
-            val endLimitDate =   endCalendar//.、、tim, endLimitCalendar.time)
+            val end = endLimitCalendar?.run {
+                if (endCalendar.time.before(time)) {
+                    endCalendar
+                } else {
+                    this
+                }
+            } ?: run { endCalendar }
+            if (startCalendar.time.after(end.time)) {
+                view.hour = end.get(Calendar.HOUR_OF_DAY)
+                view.minute = end.get(Calendar.MINUTE)
+            }
+            startCalendar.set(Calendar.HOUR_OF_DAY, view.hour)
+            startCalendar.set(Calendar.MINUTE, view.minute)
+            btnStartDate.text = Util.date2str(startCalendar.time, Util.DATE_PATTERN_HM)
+        } else {
+            endCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+            endCalendar.set(Calendar.MINUTE, minute)
             endLimitCalendar?.apply {
-                if (startCalendar.time.after(time)) {
+                if (endCalendar.time.after(time)) {
                     view.hour = get(Calendar.HOUR_OF_DAY)
                     view.minute = get(Calendar.MINUTE)
                 }
             }
-
-            // startCalendar.set(year, monthOfYear, dayOfMonth)
-            // btnStartDate.text = Util.date2str(startCalendar.time, Util.DATE_PATTERN_HM)
-        } else {
-            // endCalendar.set(year, monthOfYear, dayOfMonth)
-            // btnEndDate.text = Util.date2str(endCalendar.time, Util.DATE_PATTERN_HM)
+            val start = startLimitCalendar?.run {
+                if (startCalendar.time.after(time)) {
+                    startCalendar
+                } else {
+                    this
+                }
+            } ?: run { startCalendar }
+            if (endCalendar.time.before(start.time)) {
+                view.hour = start.get(Calendar.HOUR_OF_DAY)
+                view.minute = start.get(Calendar.MINUTE)
+            }
+            endCalendar.set(Calendar.HOUR_OF_DAY, view.hour)
+            endCalendar.set(Calendar.MINUTE, view.minute)
+            btnEndDate.text = Util.date2str(endCalendar.time, Util.DATE_PATTERN_HM)
         }
     }
-
 
     override fun onClick(v: View) {
         when (v.id) {
             R.id.btnStartDate -> {
                 if (btnStartDate.isChecked) {
                     btnEndDate.isChecked = false
-                    // setTpDate()
+                    tpDate.hour = startCalendar.get(Calendar.HOUR_OF_DAY)
+                    tpDate.minute = startCalendar.get(Calendar.MINUTE)
                 } else {
                     btnStartDate.isChecked = true
                 }
@@ -113,7 +141,8 @@ class TimeRangPickerDialog(
             R.id.btnEndDate -> {
                 if (btnEndDate.isChecked) {
                     btnStartDate.isChecked = false
-                    // setTpDate()
+                    tpDate.hour = endCalendar.get(Calendar.HOUR_OF_DAY)
+                    tpDate.minute = endCalendar.get(Calendar.MINUTE)
                 } else {
                     btnEndDate.isChecked = true
                 }

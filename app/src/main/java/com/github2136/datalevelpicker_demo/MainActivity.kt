@@ -8,6 +8,7 @@ import com.github2136.datalevelpicker.DataLevelPickerDialog
 import com.github2136.datetime.DatePickerDialog
 import com.github2136.datetime.DateRangPickerDialog
 import com.github2136.datetime.TimePickerDialog
+import com.github2136.datetime.TimeRangPickerDialog
 
 class MainActivity : AppCompatActivity() {
     var selectData: MutableList<City> = mutableListOf()
@@ -55,6 +56,11 @@ class MainActivity : AppCompatActivity() {
             tv.text = it
         }
     }
+    val timeRangPickerDialog by lazy {
+        TimeRangPickerDialog { start, end ->
+            tv.text = "$start $end"
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,6 +106,14 @@ class MainActivity : AppCompatActivity() {
             R.id.btn8 -> {
                 timePickerDialog.setLimit("07:00", "21:00")
                 timePickerDialog.show("12:00", supportFragmentManager)
+            }
+            R.id.btn9 -> {
+                timeRangPickerDialog.setLimit(null, null)
+                timeRangPickerDialog.show(null, null, supportFragmentManager)
+            }
+            R.id.btn10 -> {
+                timeRangPickerDialog.setLimit("07:00", "21:00")
+                timeRangPickerDialog.show("12:00", "13:00", supportFragmentManager)
             }
         }
     }
