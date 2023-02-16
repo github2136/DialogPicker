@@ -5,10 +5,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.github2136.datalevelpicker.DataLevelPickerDialog
-import com.github2136.datetime.DatePickerDialog
-import com.github2136.datetime.DateRangPickerDialog
-import com.github2136.datetime.TimePickerDialog
-import com.github2136.datetime.TimeRangPickerDialog
+import com.github2136.datetime.*
 
 class MainActivity : AppCompatActivity() {
     var selectData: MutableList<City> = mutableListOf()
@@ -58,6 +55,11 @@ class MainActivity : AppCompatActivity() {
     }
     val timeRangPickerDialog by lazy {
         TimeRangPickerDialog { start, end ->
+            tv.text = "$start $end"
+        }
+    }
+    val dateTimeRangPickerDialog by lazy {
+        DateTimeRangPickerDialog { start, end ->
             tv.text = "$start $end"
         }
     }
@@ -114,6 +116,14 @@ class MainActivity : AppCompatActivity() {
             R.id.btn10 -> {
                 timeRangPickerDialog.setLimit("07:00", "21:00")
                 timeRangPickerDialog.show("12:00", "13:00", supportFragmentManager)
+            }
+            R.id.btn11 -> {
+                dateTimeRangPickerDialog.setLimit(null, null)
+                dateTimeRangPickerDialog.show("2023-01-01 12:00", "2023-01-01 13:00", supportFragmentManager)
+            }
+            R.id.btn12 -> {
+                dateTimeRangPickerDialog.setLimit("2023-02-01 12:00", "2023-04-01 12:00")
+                dateTimeRangPickerDialog.show("2023-02-01 00:00", "2023-02-01 13:00", supportFragmentManager)
             }
         }
     }

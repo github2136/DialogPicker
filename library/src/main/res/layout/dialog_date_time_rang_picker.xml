@@ -70,9 +70,23 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:checkable="true"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                tools:text="2022-12-22" />
+
+            <Button
+                android:id="@+id/btnStartTime"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
                 android:layout_weight="1"
                 android:checkable="true"
-                tools:text="2022-12-22" />
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                tools:text="12:00" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -87,9 +101,23 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:checkable="true"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                tools:text="2022-12-22" />
+
+            <Button
+                android:id="@+id/btnEndTime"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
                 android:layout_weight="1"
                 android:checkable="true"
-                tools:text="2022-12-22" />
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                tools:text="12:00" />
         </LinearLayout>
 
         <DatePicker
@@ -98,5 +126,14 @@
             android:layout_height="wrap_content"
             android:calendarViewShown="false"
             android:datePickerMode="spinner" />
+
+        <TimePicker
+            android:id="@+id/tpTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:calendarViewShown="false"
+            android:timePickerMode="spinner"
+            android:visibility="gone"
+            tools:visibility="visible" />
     </LinearLayout>
 </LinearLayout>

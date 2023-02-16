@@ -28,11 +28,10 @@ class DateRangPickerDialog constructor(
     var title: String = "请选择时间范围", startLimit: String? = null, endLimit: String? = null, onConfirm: (start: String, end: String) -> Unit
 ) : DialogFragment(), View.OnClickListener, DatePicker.OnDateChangedListener {
     private val className by lazy { javaClass.simpleName }
-    private var startCalendar: Calendar
-    private var endCalendar: Calendar
-
-    private var startLimitCalendar: Calendar? = null
-    private var endLimitCalendar: Calendar? = null
+    private val startCalendar: Calendar = Calendar.getInstance()
+    private val endCalendar: Calendar = Calendar.getInstance()
+    private val startLimitCalendar: Calendar = Calendar.getInstance()
+    private val endLimitCalendar: Calendar = Calendar.getInstance()
     private var onConfirm: ((start: String, end: String) -> Unit)? = null
 
     private lateinit var tvTitle: TextView
@@ -43,8 +42,6 @@ class DateRangPickerDialog constructor(
     private lateinit var dpDate: DatePicker
 
     init {
-        startCalendar = Calendar.getInstance()
-        endCalendar = Calendar.getInstance()
         setLimit(startLimit, endLimit)
         this.onConfirm = onConfirm
     }
@@ -122,20 +119,20 @@ class DateRangPickerDialog constructor(
         if (startLimit != null) {
             startLimit.apply {
                 Util.str2date(this, Util.DATE_PATTERN_YMD)?.apply {
-                    startLimitCalendar?.also { it.time = this } ?: run { startLimitCalendar = Calendar.getInstance().also { it.time = this } }
+                    startLimitCalendar.time = this
                 }
             }
         } else {
-            startLimitCalendar = null
+            startLimitCalendar.timeInMillis = 0
         }
         if (endLimit != null) {
             endLimit.apply {
                 Util.str2date(this, Util.DATE_PATTERN_YMD)?.apply {
-                    endLimitCalendar?.also { it.time = this } ?: run { endLimitCalendar = Calendar.getInstance().also { it.time = this } }
+                    endLimitCalendar.time = this
                 }
             }
         } else {
-            endLimitCalendar = null
+            endLimitCalendar.timeInMillis = Long.MAX_VALUE
         }
     }
 
@@ -146,14 +143,14 @@ class DateRangPickerDialog constructor(
                     time = Util.str2date(start, Util.DATE_PATTERN_YMD)
                 }
             } else {
-                startCalendar = Calendar.getInstance()
+                startCalendar.time = Date()
             }
             if (end != null) {
                 endCalendar.apply {
                     time = Util.str2date(end, Util.DATE_PATTERN_YMD)
                 }
             } else {
-                endCalendar = Calendar.getInstance()
+                endCalendar.time = Date()
             }
             show(manager, className)
         }
@@ -170,20 +167,12 @@ class DateRangPickerDialog constructor(
     private fun setDpDate() {
         if (btnStartDate.isChecked) {
             dpDate.init(startCalendar.get(Calendar.YEAR), startCalendar.get(Calendar.MONTH), startCalendar.get(Calendar.DAY_OF_MONTH), this)
-            dpDate.minDate = startLimitCalendar?.timeInMillis ?: 0
-            endLimitCalendar?.apply {
-                dpDate.maxDate = min(this.timeInMillis, endCalendar.timeInMillis)
-            } ?: run {
-                dpDate.maxDate = endCalendar.timeInMillis
-            }
-        } else {
+            dpDate.minDate = startLimitCalendar.timeInMillis
+            dpDate.maxDate = min(endLimitCalendar.timeInMillis, endCalendar.timeInMillis)
+        } else if (btnEndDate.isChecked) {
             dpDate.init(endCalendar.get(Calendar.YEAR), endCalendar.get(Calendar.MONTH), endCalendar.get(Calendar.DAY_OF_MONTH), this)
-            startLimitCalendar?.apply {
-                dpDate.minDate = max(this.timeInMillis, endCalendar.timeInMillis)
-            } ?: run {
-                dpDate.minDate = startCalendar.timeInMillis
-            }
-            dpDate.maxDate = endLimitCalendar?.timeInMillis ?: Long.MAX_VALUE
+            dpDate.minDate = max(startCalendar.timeInMillis, startLimitCalendar.timeInMillis)
+            dpDate.maxDate = endLimitCalendar.timeInMillis
         }
     }
 }

@@ -23,23 +23,20 @@ class TimeRangPickerDialog(
     var title: String = "请选择时间范围", startLimit: String? = null, endLimit: String? = null, onConfirm: (start: String, end: String) -> Unit
 ) : DialogFragment(), View.OnClickListener, TimePicker.OnTimeChangedListener {
     private val className by lazy { javaClass.simpleName }
-    private var startCalendar: Calendar
-    private var endCalendar: Calendar
-
-    private var startLimitCalendar: Calendar? = null
-    private var endLimitCalendar: Calendar? = null
+    private val startCalendar: Calendar = Calendar.getInstance()
+    private val endCalendar: Calendar = Calendar.getInstance()
+    private val startLimitCalendar: Calendar = Calendar.getInstance()
+    private val endLimitCalendar: Calendar = Calendar.getInstance()
     private var onConfirm: ((start: String, end: String) -> Unit)? = null
 
     private lateinit var tvTitle: TextView
     private lateinit var btnConfirm: TextView
     private lateinit var btnCancel: TextView
-    private lateinit var btnStartDate: MaterialButton
-    private lateinit var btnEndDate: MaterialButton
-    private lateinit var tpDate: TimePicker
+    private lateinit var btnStartTime: MaterialButton
+    private lateinit var btnEndTime: MaterialButton
+    private lateinit var tpTime: TimePicker
 
     init {
-        startCalendar = Calendar.getInstance()
-        endCalendar = Calendar.getInstance()
         setLimit(startLimit, endLimit)
         this.onConfirm = onConfirm
     }
@@ -56,95 +53,78 @@ class TimeRangPickerDialog(
         tvTitle = view.findViewById(R.id.tvTitle)
         btnConfirm = view.findViewById(R.id.btnConfirm)
         btnCancel = view.findViewById(R.id.btnCancel)
-        btnStartDate = view.findViewById(R.id.btnStartDate)
-        btnEndDate = view.findViewById(R.id.btnEndDate)
-        tpDate = view.findViewById(R.id.tpDate)
+        btnStartTime = view.findViewById(R.id.btnStartTime)
+        btnEndTime = view.findViewById(R.id.btnEndTime)
+        tpTime = view.findViewById(R.id.tpTime)
         //禁止编辑
-        tpDate.descendantFocusability = TimePicker.FOCUS_BLOCK_DESCENDANTS
-        tpDate.setIs24HourView(true)
-        tpDate.hour = startCalendar.get(Calendar.HOUR_OF_DAY)
-        tpDate.minute = startCalendar.get(Calendar.MINUTE)
+        tpTime.descendantFocusability = TimePicker.FOCUS_BLOCK_DESCENDANTS
+        tpTime.setIs24HourView(true)
+        tpTime.hour = startCalendar.get(Calendar.HOUR_OF_DAY)
+        tpTime.minute = startCalendar.get(Calendar.MINUTE)
         btnConfirm.setOnClickListener(this)
         btnCancel.setOnClickListener(this)
-        btnStartDate.setOnClickListener(this)
-        btnEndDate.setOnClickListener(this)
+        btnStartTime.setOnClickListener(this)
+        btnEndTime.setOnClickListener(this)
         tvTitle.text = title
-        btnStartDate.text = Util.date2str(startCalendar.time, Util.DATE_PATTERN_HM)
-        btnEndDate.text = Util.date2str(endCalendar.time, Util.DATE_PATTERN_HM)
-        btnStartDate.isChecked = true
-        btnEndDate.isChecked = false
-        tpDate.setOnTimeChangedListener(this)
+        btnStartTime.text = Util.date2str(startCalendar.time, Util.DATE_PATTERN_HM)
+        btnEndTime.text = Util.date2str(endCalendar.time, Util.DATE_PATTERN_HM)
+        btnStartTime.isChecked = true
+        btnEndTime.isChecked = false
+        tpTime.setOnTimeChangedListener(this)
         return view
     }
 
     override fun onTimeChanged(view: TimePicker, hourOfDay: Int, minute: Int) {
-        if (btnStartDate.isChecked) {
+        if (btnStartTime.isChecked) {
             startCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             startCalendar.set(Calendar.MINUTE, minute)
-            startLimitCalendar?.apply {
-                if (startCalendar.time.before(time)) {
-                    view.hour = get(Calendar.HOUR_OF_DAY)
-                    view.minute = get(Calendar.MINUTE)
-                }
+            if (startCalendar.time.before(startLimitCalendar.time)) {
+                view.hour = startLimitCalendar.get(Calendar.HOUR_OF_DAY)
+                view.minute = startLimitCalendar.get(Calendar.MINUTE)
             }
-            val end = endLimitCalendar?.run {
-                if (endCalendar.time.before(time)) {
-                    endCalendar
-                } else {
-                    this
-                }
-            } ?: run { endCalendar }
-            if (startCalendar.time.after(end.time)) {
-                view.hour = end.get(Calendar.HOUR_OF_DAY)
-                view.minute = end.get(Calendar.MINUTE)
+            if (startCalendar.time.after(endCalendar.time)) {
+                view.hour = endCalendar.get(Calendar.HOUR_OF_DAY)
+                view.minute = endCalendar.get(Calendar.MINUTE)
             }
             startCalendar.set(Calendar.HOUR_OF_DAY, view.hour)
             startCalendar.set(Calendar.MINUTE, view.minute)
-            btnStartDate.text = Util.date2str(startCalendar.time, Util.DATE_PATTERN_HM)
-        } else {
+            btnStartTime.text = Util.date2str(startCalendar.time, Util.DATE_PATTERN_HM)
+        } else if (btnEndTime.isChecked) {
             endCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             endCalendar.set(Calendar.MINUTE, minute)
-            endLimitCalendar?.apply {
-                if (endCalendar.time.after(time)) {
-                    view.hour = get(Calendar.HOUR_OF_DAY)
-                    view.minute = get(Calendar.MINUTE)
-                }
+
+            if (endCalendar.time.after(endLimitCalendar.time)) {
+                view.hour = endLimitCalendar.get(Calendar.HOUR_OF_DAY)
+                view.minute = endLimitCalendar.get(Calendar.MINUTE)
             }
-            val start = startLimitCalendar?.run {
-                if (startCalendar.time.after(time)) {
-                    startCalendar
-                } else {
-                    this
-                }
-            } ?: run { startCalendar }
-            if (endCalendar.time.before(start.time)) {
-                view.hour = start.get(Calendar.HOUR_OF_DAY)
-                view.minute = start.get(Calendar.MINUTE)
+            if (endCalendar.time.before(startCalendar.time)) {
+                view.hour = startCalendar.get(Calendar.HOUR_OF_DAY)
+                view.minute = startCalendar.get(Calendar.MINUTE)
             }
             endCalendar.set(Calendar.HOUR_OF_DAY, view.hour)
             endCalendar.set(Calendar.MINUTE, view.minute)
-            btnEndDate.text = Util.date2str(endCalendar.time, Util.DATE_PATTERN_HM)
+            btnEndTime.text = Util.date2str(endCalendar.time, Util.DATE_PATTERN_HM)
         }
     }
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.btnStartDate -> {
-                if (btnStartDate.isChecked) {
-                    btnEndDate.isChecked = false
-                    tpDate.hour = startCalendar.get(Calendar.HOUR_OF_DAY)
-                    tpDate.minute = startCalendar.get(Calendar.MINUTE)
+            R.id.btnStartTime -> {
+                if (btnStartTime.isChecked) {
+                    btnEndTime.isChecked = false
+                    tpTime.hour = startCalendar.get(Calendar.HOUR_OF_DAY)
+                    tpTime.minute = startCalendar.get(Calendar.MINUTE)
                 } else {
-                    btnStartDate.isChecked = true
+                    btnStartTime.isChecked = true
                 }
             }
-            R.id.btnEndDate -> {
-                if (btnEndDate.isChecked) {
-                    btnStartDate.isChecked = false
-                    tpDate.hour = endCalendar.get(Calendar.HOUR_OF_DAY)
-                    tpDate.minute = endCalendar.get(Calendar.MINUTE)
+            R.id.btnEndTime -> {
+                if (btnEndTime.isChecked) {
+                    btnStartTime.isChecked = false
+                    tpTime.hour = endCalendar.get(Calendar.HOUR_OF_DAY)
+                    tpTime.minute = endCalendar.get(Calendar.MINUTE)
                 } else {
-                    btnEndDate.isChecked = true
+                    btnEndTime.isChecked = true
                 }
             }
             R.id.btnConfirm -> {
@@ -161,20 +141,20 @@ class TimeRangPickerDialog(
         if (startLimit != null) {
             startLimit.apply {
                 Util.str2date(this, Util.DATE_PATTERN_HM)?.apply {
-                    startLimitCalendar?.also { it.time = this } ?: run { startLimitCalendar = Calendar.getInstance().also { it.time = this } }
+                    startLimitCalendar.time = this
                 }
             }
         } else {
-            startLimitCalendar = null
+            startLimitCalendar.timeInMillis = 0
         }
         if (endLimit != null) {
             endLimit.apply {
                 Util.str2date(this, Util.DATE_PATTERN_HM)?.apply {
-                    endLimitCalendar?.also { it.time = this } ?: run { endLimitCalendar = Calendar.getInstance().also { it.time = this } }
+                    endLimitCalendar.time = this
                 }
             }
         } else {
-            endLimitCalendar = null
+            endLimitCalendar.timeInMillis = Long.MAX_VALUE
         }
     }
 
@@ -185,22 +165,22 @@ class TimeRangPickerDialog(
                     time = Util.str2date(start, Util.DATE_PATTERN_HM)
                 }
             } else {
-                startCalendar = Calendar.getInstance()
+                startCalendar.time = Date()
             }
             if (end != null) {
                 endCalendar.apply {
                     time = Util.str2date(end, Util.DATE_PATTERN_HM)
                 }
             } else {
-                endCalendar = Calendar.getInstance()
+                endCalendar.time = Date()
             }
             show(manager, className)
         }
     }
 
     override fun onDismiss(dialog: DialogInterface) {
-        btnStartDate.isChecked = true
-        btnEndDate.isChecked = false
+        btnStartTime.isChecked = true
+        btnEndTime.isChecked = false
         super.onDismiss(dialog)
     }
 }

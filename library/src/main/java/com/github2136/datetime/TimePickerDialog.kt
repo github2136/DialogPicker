@@ -24,18 +24,17 @@ class TimePickerDialog(
     var title: String = "请选择时间", startLimit: String? = null, endLimit: String? = null, onConfirm: (date: String) -> Unit
 ) : DialogFragment(), View.OnClickListener, TimePicker.OnTimeChangedListener {
     private val className by lazy { javaClass.simpleName }
-    private var dateCalender: Calendar
-    private var startLimitCalendar: Calendar? = null
-    private var endLimitCalendar: Calendar? = null
+    private val timeCalender: Calendar = Calendar.getInstance()
+    private val startLimitCalendar: Calendar = Calendar.getInstance()
+    private val endLimitCalendar: Calendar = Calendar.getInstance()
     private var onConfirm: ((data: String) -> Unit)? = null
 
     private lateinit var tvTitle: TextView
-    private lateinit var tpDate: TimePicker
+    private lateinit var tpTime: TimePicker
     private lateinit var btnConfirm: TextView
     private lateinit var btnCancel: TextView
 
     init {
-        dateCalender = Calendar.getInstance()
         setLimit(startLimit, endLimit)
         this.onConfirm = onConfirm
     }
@@ -49,14 +48,14 @@ class TimePickerDialog(
         }
         val view = inflater.inflate(R.layout.dialog_time_picker, container)
         tvTitle = view.findViewById(R.id.tvTitle)
-        tpDate = view.findViewById(R.id.tpDate)
+        tpTime = view.findViewById(R.id.tpTime)
         btnConfirm = view.findViewById(R.id.btnConfirm)
         btnCancel = view.findViewById(R.id.btnCancel)
-        tpDate.descendantFocusability = TimePicker.FOCUS_BLOCK_DESCENDANTS
-        tpDate.setIs24HourView(true)
-        tpDate.hour = dateCalender.get(Calendar.HOUR_OF_DAY)
-        tpDate.minute = dateCalender.get(Calendar.MINUTE)
-        tpDate.setOnTimeChangedListener(this)
+        tpTime.descendantFocusability = TimePicker.FOCUS_BLOCK_DESCENDANTS
+        tpTime.setIs24HourView(true)
+        tpTime.hour = timeCalender.get(Calendar.HOUR_OF_DAY)
+        tpTime.minute = timeCalender.get(Calendar.MINUTE)
+        tpTime.setOnTimeChangedListener(this)
         btnConfirm.setOnClickListener(this)
         btnCancel.setOnClickListener(this)
         tvTitle.text = title
@@ -68,11 +67,11 @@ class TimePickerDialog(
             if (date != null) {
                 date.apply {
                     Util.str2date(this, Util.DATE_PATTERN_HM)?.apply {
-                        dateCalender.time = this
+                        timeCalender.time = this
                     }
                 }
             } else {
-                dateCalender = Calendar.getInstance()
+                timeCalender.time = Date()
             }
             super.show(manager, className)
         }
@@ -82,27 +81,27 @@ class TimePickerDialog(
         if (startLimit != null) {
             startLimit.apply {
                 Util.str2date(this, Util.DATE_PATTERN_HM)?.apply {
-                    startLimitCalendar?.also { it.time = this } ?: run { startLimitCalendar = Calendar.getInstance().also { it.time = this } }
+                    startLimitCalendar.time = this
                 }
             }
         } else {
-            startLimitCalendar = null
+            startLimitCalendar.timeInMillis = 0
         }
         if (endLimit != null) {
             endLimit.apply {
                 Util.str2date(this, Util.DATE_PATTERN_HM)?.apply {
-                    endLimitCalendar?.also { it.time = this } ?: run { endLimitCalendar = Calendar.getInstance().also { it.time = this } }
+                    endLimitCalendar.time = this
                 }
             }
         } else {
-            endLimitCalendar = null
+            endLimitCalendar.timeInMillis = Long.MAX_VALUE
         }
     }
 
     override fun onClick(v: View) {
         when (v.id) {
             R.id.btnConfirm -> {
-                onConfirm?.invoke(Util.date2str(dateCalender.time, Util.DATE_PATTERN_HM))
+                onConfirm?.invoke(Util.date2str(timeCalender.time, Util.DATE_PATTERN_HM))
                 dismiss()
             }
             R.id.btnCancel -> {
@@ -112,21 +111,17 @@ class TimePickerDialog(
     }
 
     override fun onTimeChanged(view: TimePicker, hourOfDay: Int, minute: Int) {
-        dateCalender.set(Calendar.HOUR_OF_DAY, hourOfDay)
-        dateCalender.set(Calendar.MINUTE, minute)
-        startLimitCalendar?.apply {
-            if (dateCalender.time.before(time)) {
-                view.hour = get(Calendar.HOUR_OF_DAY)
-                view.minute = get(Calendar.MINUTE)
-            }
+        timeCalender.set(Calendar.HOUR_OF_DAY, hourOfDay)
+        timeCalender.set(Calendar.MINUTE, minute)
+        if (timeCalender.time.before(startLimitCalendar.time)) {
+            view.hour = startLimitCalendar.get(Calendar.HOUR_OF_DAY)
+            view.minute = startLimitCalendar.get(Calendar.MINUTE)
         }
-        endLimitCalendar?.apply {
-            if (dateCalender.time.after(time)) {
-                view.hour = get(Calendar.HOUR_OF_DAY)
-                view.minute = get(Calendar.MINUTE)
-            }
+        if (timeCalender.time.after(endLimitCalendar.time)) {
+            view.hour = endLimitCalendar.get(Calendar.HOUR_OF_DAY)
+            view.minute = endLimitCalendar.get(Calendar.MINUTE)
         }
-        dateCalender.set(Calendar.HOUR_OF_DAY, view.hour)
-        dateCalender.set(Calendar.MINUTE, view.minute)
+        timeCalender.set(Calendar.HOUR_OF_DAY, view.hour)
+        timeCalender.set(Calendar.MINUTE, view.minute)
     }
 }

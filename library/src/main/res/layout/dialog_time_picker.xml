@@ -61,7 +61,7 @@
         android:padding="8dp">
 
         <TimePicker
-            android:id="@+id/tpDate"
+            android:id="@+id/tpTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:calendarViewShown="false"
