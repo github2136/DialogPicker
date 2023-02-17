@@ -15,12 +15,13 @@ import com.github2136.Util
 import com.github2136.datalevelpicker.R
 import com.google.android.material.button.MaterialButton
 import java.util.*
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  * Created by yb on 2023/2/13
  * 日期时间范围选择
+ * @param title 显示标题
+ * @param startLimit 开始范围
+ * @param endLimit 结束范围
  */
 class DateTimeRangPickerDialog constructor(
     var title: String = "请选择时间范围", startLimit: String? = null, endLimit: String? = null, onConfirm: (start: String, end: String) -> Unit
@@ -208,31 +209,23 @@ class DateTimeRangPickerDialog constructor(
      */
     private fun setDpDate() {
         if (btnStartDate.isChecked) {
-            // dpDate.init(startCalendar.get(Calendar.YEAR), startCalendar.get(Calendar.MONTH), startCalendar.get(Calendar.DAY_OF_MONTH), this)
-            // dpDate.minDate = startLimitCalendar?.timeInMillis ?: 0
-            // endLimitCalendar?.apply {
-            //     dpDate.maxDate = min(this.timeInMillis, endCalendar.timeInMillis)
-            // } ?: run {
-            //     dpDate.maxDate = endCalendar.timeInMillis
-            // }
+            dpDate.init(startCalendar.get(Calendar.YEAR), startCalendar.get(Calendar.MONTH), startCalendar.get(Calendar.DAY_OF_MONTH), this)
+            dpDate.minDate = startLimitCalendar.timeInMillis
+            dpDate.maxDate = endCalendar.timeInMillis
         } else if (btnEndDate.isChecked) {
-            // dpDate.init(endCalendar.get(Calendar.YEAR), endCalendar.get(Calendar.MONTH), endCalendar.get(Calendar.DAY_OF_MONTH), this)
-            // startLimitCalendar?.apply {
-            //     dpDate.minDate = max(this.timeInMillis, endCalendar.timeInMillis)
-            // } ?: run {
-            //     dpDate.minDate = startCalendar.timeInMillis
-            // }
-            // dpDate.maxDate = endLimitCalendar?.timeInMillis ?: Long.MAX_VALUE
+            dpDate.init(endCalendar.get(Calendar.YEAR), endCalendar.get(Calendar.MONTH), endCalendar.get(Calendar.DAY_OF_MONTH), this)
+            dpDate.minDate = startCalendar.timeInMillis
+            dpDate.maxDate = endLimitCalendar.timeInMillis
         }
     }
 
     override fun onDateChanged(view: DatePicker?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
         if (btnStartDate.isChecked) {
             startCalendar.set(year, monthOfYear, dayOfMonth)
+            startCalendar.time.before()
             btnStartDate.text = Util.date2str(startCalendar.time, Util.DATE_PATTERN_YMD)
         } else {
             endCalendar.set(year, monthOfYear, dayOfMonth)
-            endCalendar
             btnEndDate.text = Util.date2str(endCalendar.time, Util.DATE_PATTERN_YMD)
         }
     }
@@ -241,13 +234,13 @@ class DateTimeRangPickerDialog constructor(
         if (btnStartTime.isChecked) {
             startCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             startCalendar.set(Calendar.MINUTE, minute)
-            startLimitCalendar?.apply {
+            startLimitCalendar.apply {
                 if (startCalendar.time.before(time)) {
                     view.hour = get(Calendar.HOUR_OF_DAY)
                     view.minute = get(Calendar.MINUTE)
                 }
             }
-            val end = endLimitCalendar?.run {
+            val end = endLimitCalendar.run {
                 if (endCalendar.time.before(time)) {
                     endCalendar
                 } else {

@@ -18,6 +18,9 @@ import java.util.*
 /**
  * Created by yb on 2023/2/13
  * 时间范围选择
+ * @param title 显示标题
+ * @param startLimit 开始范围
+ * @param endLimit 结束范围
  */
 class TimeRangPickerDialog(
     var title: String = "请选择时间范围", startLimit: String? = null, endLimit: String? = null, onConfirm: (start: String, end: String) -> Unit
