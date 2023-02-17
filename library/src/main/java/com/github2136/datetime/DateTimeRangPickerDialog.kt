@@ -222,10 +222,25 @@ class DateTimeRangPickerDialog constructor(
     override fun onDateChanged(view: DatePicker?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
         if (btnStartDate.isChecked) {
             startCalendar.set(year, monthOfYear, dayOfMonth)
-            startCalendar.time.before()
+            if (startCalendar.time.before(startLimitCalendar.time)) {
+                startCalendar.time = startLimitCalendar.time
+                btnStartTime.text = Util.date2str(startCalendar.time, Util.DATE_PATTERN_HM)
+            }
+            if (startCalendar.time.after(endCalendar.time)) {
+                startCalendar.time = endCalendar.time
+                btnStartTime.text = Util.date2str(startCalendar.time, Util.DATE_PATTERN_HM)
+            }
             btnStartDate.text = Util.date2str(startCalendar.time, Util.DATE_PATTERN_YMD)
-        } else {
+        } else if (btnEndDate.isChecked) {
             endCalendar.set(year, monthOfYear, dayOfMonth)
+            if (endCalendar.time.after(endLimitCalendar.time)) {
+                endCalendar.time = endLimitCalendar.time
+                btnEndTime.text = Util.date2str(endCalendar.time, Util.DATE_PATTERN_HM)
+            }
+            if (endCalendar.time.before(startCalendar.time)) {
+                endCalendar.time = startCalendar.time
+                btnEndTime.text = Util.date2str(endCalendar.time, Util.DATE_PATTERN_HM)
+            }
             btnEndDate.text = Util.date2str(endCalendar.time, Util.DATE_PATTERN_YMD)
         }
     }
@@ -234,45 +249,28 @@ class DateTimeRangPickerDialog constructor(
         if (btnStartTime.isChecked) {
             startCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             startCalendar.set(Calendar.MINUTE, minute)
-            startLimitCalendar.apply {
-                if (startCalendar.time.before(time)) {
-                    view.hour = get(Calendar.HOUR_OF_DAY)
-                    view.minute = get(Calendar.MINUTE)
-                }
+            if (startCalendar.time.before(startLimitCalendar.time)) {
+                view.hour = startLimitCalendar.get(Calendar.HOUR_OF_DAY)
+                view.minute = startLimitCalendar.get(Calendar.MINUTE)
             }
-            val end = endLimitCalendar.run {
-                if (endCalendar.time.before(time)) {
-                    endCalendar
-                } else {
-                    this
-                }
-            } ?: run { endCalendar }
-            if (startCalendar.time.after(end.time)) {
-                view.hour = end.get(Calendar.HOUR_OF_DAY)
-                view.minute = end.get(Calendar.MINUTE)
+            if (startCalendar.time.after(endCalendar.time)) {
+                view.hour = endCalendar.get(Calendar.HOUR_OF_DAY)
+                view.minute = endCalendar.get(Calendar.MINUTE)
             }
             startCalendar.set(Calendar.HOUR_OF_DAY, view.hour)
             startCalendar.set(Calendar.MINUTE, view.minute)
             btnStartTime.text = Util.date2str(startCalendar.time, Util.DATE_PATTERN_HM)
-        } else {
+        } else if (btnEndTime.isChecked) {
             endCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             endCalendar.set(Calendar.MINUTE, minute)
-            endLimitCalendar?.apply {
-                if (endCalendar.time.after(time)) {
-                    view.hour = get(Calendar.HOUR_OF_DAY)
-                    view.minute = get(Calendar.MINUTE)
-                }
+
+            if (endCalendar.time.after(endLimitCalendar.time)) {
+                view.hour = endLimitCalendar.get(Calendar.HOUR_OF_DAY)
+                view.minute = endLimitCalendar.get(Calendar.MINUTE)
             }
-            val start = startLimitCalendar?.run {
-                if (startCalendar.time.after(time)) {
-                    startCalendar
-                } else {
-                    this
-                }
-            } ?: run { startCalendar }
-            if (endCalendar.time.before(start.time)) {
-                view.hour = start.get(Calendar.HOUR_OF_DAY)
-                view.minute = start.get(Calendar.MINUTE)
+            if (endCalendar.time.before(startCalendar.time)) {
+                view.hour = startCalendar.get(Calendar.HOUR_OF_DAY)
+                view.minute = startCalendar.get(Calendar.MINUTE)
             }
             endCalendar.set(Calendar.HOUR_OF_DAY, view.hour)
             endCalendar.set(Calendar.MINUTE, view.minute)
