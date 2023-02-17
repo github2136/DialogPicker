@@ -63,22 +63,38 @@ class DatePickerDialog constructor(
         return view
     }
 
-    fun show(date: String?, manager: FragmentManager) {
-        if (!this.isAdded) {
-            if (date != null) {
-                date.apply {
-                    Util.str2date(this, Util.DATE_PATTERN_YMD)?.apply {
-                        dateCalender.time = this
-                    }
-                }
-            } else {
-                dateCalender.time = Date()
+    override fun onDateChanged(view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int) {
+        dateCalender.set(Calendar.YEAR, year)
+        dateCalender.set(Calendar.MONTH, monthOfYear)
+        dateCalender.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+    }
+
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.btnConfirm -> {
+                onConfirm?.invoke(Util.date2str(dateCalender.time, Util.DATE_PATTERN_YMD))
+                dismiss()
             }
-            super.show(manager, className)
+            R.id.btnCancel -> {
+                dismiss()
+            }
         }
     }
 
     fun setLimit(startLimit: String?, endLimit: String?) {
+        var startLimit = startLimit
+        var endLimit = endLimit
+        if (startLimit != null && endLimit != null) {
+            val s = Util.str2date(startLimit, Util.DATE_PATTERN_YMD)
+            val e = Util.str2date(endLimit, Util.DATE_PATTERN_YMD)
+            if (s != null && e != null) {
+                if (s.time > e.time) {
+                    //开始时间大于结束时间
+                    startLimit = null
+                    endLimit = null
+                }
+            }
+        }
         if (startLimit != null) {
             startLimit.apply {
                 Util.str2date(this, Util.DATE_PATTERN_YMD)?.apply {
@@ -99,21 +115,19 @@ class DatePickerDialog constructor(
         }
     }
 
-    override fun onClick(v: View) {
-        when (v.id) {
-            R.id.btnConfirm -> {
-                onConfirm?.invoke(Util.date2str(dateCalender.time, Util.DATE_PATTERN_YMD))
-                dismiss()
+    fun show(date: String?, manager: FragmentManager) {
+        if (!this.isAdded) {
+            val temp = if (date != null) {
+                Util.str2date(date, Util.DATE_PATTERN_YMD) ?: Date()
+            } else {
+                Date()
             }
-            R.id.btnCancel -> {
-                dismiss()
+            if (temp.before(startLimitCalendar.time) || temp.after(endLimitCalendar.time)) {
+                dateCalender.time = startLimitCalendar.time
+            } else {
+                dateCalender.time = temp
             }
+            super.show(manager, className)
         }
-    }
-
-    override fun onDateChanged(view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        dateCalender.set(Calendar.YEAR, year)
-        dateCalender.set(Calendar.MONTH, monthOfYear)
-        dateCalender.set(Calendar.DAY_OF_MONTH, dayOfMonth)
     }
 }

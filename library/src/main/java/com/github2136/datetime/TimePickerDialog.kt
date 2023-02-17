@@ -62,22 +62,47 @@ class TimePickerDialog(
         return view
     }
 
-    fun show(date: String?, manager: FragmentManager) {
-        if (!this.isAdded) {
-            if (date != null) {
-                date.apply {
-                    Util.str2date(this, Util.DATE_PATTERN_HM)?.apply {
-                        timeCalender.time = this
-                    }
-                }
-            } else {
-                timeCalender.time = Date()
+    override fun onTimeChanged(view: TimePicker, hourOfDay: Int, minute: Int) {
+        timeCalender.set(Calendar.HOUR_OF_DAY, hourOfDay)
+        timeCalender.set(Calendar.MINUTE, minute)
+        if (timeCalender.time.before(startLimitCalendar.time)) {
+            view.hour = startLimitCalendar.get(Calendar.HOUR_OF_DAY)
+            view.minute = startLimitCalendar.get(Calendar.MINUTE)
+        }
+        if (timeCalender.time.after(endLimitCalendar.time)) {
+            view.hour = endLimitCalendar.get(Calendar.HOUR_OF_DAY)
+            view.minute = endLimitCalendar.get(Calendar.MINUTE)
+        }
+        timeCalender.set(Calendar.HOUR_OF_DAY, view.hour)
+        timeCalender.set(Calendar.MINUTE, view.minute)
+    }
+
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.btnConfirm -> {
+                onConfirm?.invoke(Util.date2str(timeCalender.time, Util.DATE_PATTERN_HM))
+                dismiss()
             }
-            super.show(manager, className)
+            R.id.btnCancel -> {
+                dismiss()
+            }
         }
     }
 
     fun setLimit(startLimit: String?, endLimit: String?) {
+        var startLimit = startLimit
+        var endLimit = endLimit
+        if (startLimit != null && endLimit != null) {
+            val s = Util.str2date(startLimit, Util.DATE_PATTERN_HM)
+            val e = Util.str2date(endLimit, Util.DATE_PATTERN_HM)
+            if (s != null && e != null) {
+                if (s.time > e.time) {
+                    //开始时间大于结束时间
+                    startLimit = null
+                    endLimit = null
+                }
+            }
+        }
         if (startLimit != null) {
             startLimit.apply {
                 Util.str2date(this, Util.DATE_PATTERN_HM)?.apply {
@@ -98,30 +123,19 @@ class TimePickerDialog(
         }
     }
 
-    override fun onClick(v: View) {
-        when (v.id) {
-            R.id.btnConfirm -> {
-                onConfirm?.invoke(Util.date2str(timeCalender.time, Util.DATE_PATTERN_HM))
-                dismiss()
+    fun show(date: String?, manager: FragmentManager) {
+        if (!this.isAdded) {
+            val temp = if (date != null) {
+                Util.str2date(date, Util.DATE_PATTERN_HM) ?: Date()
+            } else {
+                Date()
             }
-            R.id.btnCancel -> {
-                dismiss()
+            if (temp.before(startLimitCalendar.time) || temp.after(endLimitCalendar.time)) {
+                timeCalender.time = startLimitCalendar.time
+            } else {
+                timeCalender.time = temp
             }
+            super.show(manager, className)
         }
-    }
-
-    override fun onTimeChanged(view: TimePicker, hourOfDay: Int, minute: Int) {
-        timeCalender.set(Calendar.HOUR_OF_DAY, hourOfDay)
-        timeCalender.set(Calendar.MINUTE, minute)
-        if (timeCalender.time.before(startLimitCalendar.time)) {
-            view.hour = startLimitCalendar.get(Calendar.HOUR_OF_DAY)
-            view.minute = startLimitCalendar.get(Calendar.MINUTE)
-        }
-        if (timeCalender.time.after(endLimitCalendar.time)) {
-            view.hour = endLimitCalendar.get(Calendar.HOUR_OF_DAY)
-            view.minute = endLimitCalendar.get(Calendar.MINUTE)
-        }
-        timeCalender.set(Calendar.HOUR_OF_DAY, view.hour)
-        timeCalender.set(Calendar.MINUTE, view.minute)
     }
 }

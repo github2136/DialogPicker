@@ -115,7 +115,41 @@ class DateRangPickerDialog constructor(
         }
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        btnStartDate.isChecked = true
+        btnEndDate.isChecked = false
+        super.onDismiss(dialog)
+    }
+
+    /**
+     * 设置控件时间及限制范围
+     */
+    private fun setDpDate() {
+        if (btnStartDate.isChecked) {
+            dpDate.init(startCalendar.get(Calendar.YEAR), startCalendar.get(Calendar.MONTH), startCalendar.get(Calendar.DAY_OF_MONTH), this)
+            dpDate.minDate = startLimitCalendar.timeInMillis
+            dpDate.maxDate = min(endLimitCalendar.timeInMillis, endCalendar.timeInMillis)
+        } else if (btnEndDate.isChecked) {
+            dpDate.init(endCalendar.get(Calendar.YEAR), endCalendar.get(Calendar.MONTH), endCalendar.get(Calendar.DAY_OF_MONTH), this)
+            dpDate.minDate = max(startCalendar.timeInMillis, startLimitCalendar.timeInMillis)
+            dpDate.maxDate = endLimitCalendar.timeInMillis
+        }
+    }
+
     fun setLimit(startLimit: String?, endLimit: String?) {
+        var startLimit = startLimit
+        var endLimit = endLimit
+        if (startLimit != null && endLimit != null) {
+            val s = Util.str2date(startLimit, Util.DATE_PATTERN_YMD)
+            val e = Util.str2date(endLimit, Util.DATE_PATTERN_YMD)
+            if (s != null && e != null) {
+                if (s.time > e.time) {
+                    //开始时间大于结束时间
+                    startLimit = null
+                    endLimit = null
+                }
+            }
+        }
         if (startLimit != null) {
             startLimit.apply {
                 Util.str2date(this, Util.DATE_PATTERN_YMD)?.apply {
@@ -138,41 +172,28 @@ class DateRangPickerDialog constructor(
 
     fun show(start: String?, end: String?, manager: FragmentManager) {
         if (!this.isAdded) {
-            if (start != null) {
-                startCalendar.apply {
-                    time = Util.str2date(start, Util.DATE_PATTERN_YMD)
-                }
+            val startTemp = if (start != null) {
+                Util.str2date(start, Util.DATE_PATTERN_YMD) ?: Date()
             } else {
-                startCalendar.time = Date()
+                Date()
             }
-            if (end != null) {
-                endCalendar.apply {
-                    time = Util.str2date(end, Util.DATE_PATTERN_YMD)
-                }
+            if (startTemp.before(startLimitCalendar.time) || startTemp.after(endLimitCalendar.time)) {
+                startCalendar.time = startLimitCalendar.time
             } else {
-                endCalendar.time = Date()
+                startCalendar.time = startTemp
+            }
+
+            val endTemp = if (end != null) {
+                Util.str2date(end, Util.DATE_PATTERN_YMD) ?: Date()
+            } else {
+                Date()
+            }
+            if (endTemp.before(startLimitCalendar.time) || endTemp.after(endLimitCalendar.time)) {
+                endCalendar.time = startLimitCalendar.time
+            } else {
+                endCalendar.time = endTemp
             }
             show(manager, className)
-        }
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        btnStartDate.isChecked = true
-        btnEndDate.isChecked = false
-        super.onDismiss(dialog)
-    }
-    /**
-     * 设置控件时间及限制范围
-     */
-    private fun setDpDate() {
-        if (btnStartDate.isChecked) {
-            dpDate.init(startCalendar.get(Calendar.YEAR), startCalendar.get(Calendar.MONTH), startCalendar.get(Calendar.DAY_OF_MONTH), this)
-            dpDate.minDate = startLimitCalendar.timeInMillis
-            dpDate.maxDate = min(endLimitCalendar.timeInMillis, endCalendar.timeInMillis)
-        } else if (btnEndDate.isChecked) {
-            dpDate.init(endCalendar.get(Calendar.YEAR), endCalendar.get(Calendar.MONTH), endCalendar.get(Calendar.DAY_OF_MONTH), this)
-            dpDate.minDate = max(startCalendar.timeInMillis, startLimitCalendar.timeInMillis)
-            dpDate.maxDate = endLimitCalendar.timeInMillis
         }
     }
 }

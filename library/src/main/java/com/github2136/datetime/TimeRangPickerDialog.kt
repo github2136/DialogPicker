@@ -140,7 +140,26 @@ class TimeRangPickerDialog(
         }
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        btnStartTime.isChecked = true
+        btnEndTime.isChecked = false
+        super.onDismiss(dialog)
+    }
+
     fun setLimit(startLimit: String?, endLimit: String?) {
+        var startLimit = startLimit
+        var endLimit = endLimit
+        if (startLimit != null && endLimit != null) {
+            val s = Util.str2date(startLimit, Util.DATE_PATTERN_HM)
+            val e = Util.str2date(endLimit, Util.DATE_PATTERN_HM)
+            if (s != null && e != null) {
+                if (s.time > e.time) {
+                    //开始时间大于结束时间
+                    startLimit = null
+                    endLimit = null
+                }
+            }
+        }
         if (startLimit != null) {
             startLimit.apply {
                 Util.str2date(this, Util.DATE_PATTERN_HM)?.apply {
@@ -163,27 +182,28 @@ class TimeRangPickerDialog(
 
     fun show(start: String?, end: String?, manager: FragmentManager) {
         if (!this.isAdded) {
-            if (start != null) {
-                startCalendar.apply {
-                    time = Util.str2date(start, Util.DATE_PATTERN_HM)
-                }
+            val startTemp = if (start != null) {
+                Util.str2date(start, Util.DATE_PATTERN_HM) ?: Date()
             } else {
-                startCalendar.time = Date()
+                Date()
             }
-            if (end != null) {
-                endCalendar.apply {
-                    time = Util.str2date(end, Util.DATE_PATTERN_HM)
-                }
+            if (startTemp.before(startLimitCalendar.time) || startTemp.after(endLimitCalendar.time)) {
+                startCalendar.time = startLimitCalendar.time
             } else {
-                endCalendar.time = Date()
+                startCalendar.time = startTemp
+            }
+
+            val endTemp = if (end != null) {
+                Util.str2date(end, Util.DATE_PATTERN_HM) ?: Date()
+            } else {
+                Date()
+            }
+            if (endTemp.before(startLimitCalendar.time) || endTemp.after(endLimitCalendar.time)) {
+                endCalendar.time = startLimitCalendar.time
+            } else {
+                endCalendar.time = endTemp
             }
             show(manager, className)
         }
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        btnStartTime.isChecked = true
-        btnEndTime.isChecked = false
-        super.onDismiss(dialog)
     }
 }

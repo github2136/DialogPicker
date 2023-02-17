@@ -156,69 +156,6 @@ class DateTimeRangPickerDialog constructor(
         }
     }
 
-    fun setLimit(startLimit: String?, endLimit: String?) {
-        if (startLimit != null) {
-            startLimit.apply {
-                Util.str2date(this, Util.DATE_PATTERN_YMDHM)?.apply {
-                    startLimitCalendar.time = this
-                }
-            }
-        } else {
-            startLimitCalendar.timeInMillis = 0
-        }
-        if (endLimit != null) {
-            endLimit.apply {
-                Util.str2date(this, Util.DATE_PATTERN_YMDHM)?.apply {
-                    endLimitCalendar.time = this
-                }
-            }
-        } else {
-            endLimitCalendar.timeInMillis = Long.MAX_VALUE
-        }
-    }
-
-    fun show(start: String?, end: String?, manager: FragmentManager) {
-        if (!this.isAdded) {
-            if (start != null) {
-                startCalendar.apply {
-                    time = Util.str2date(start, Util.DATE_PATTERN_YMDHM)
-                }
-            } else {
-                startCalendar.time = Date()
-            }
-            if (end != null) {
-                endCalendar.apply {
-                    time = Util.str2date(end, Util.DATE_PATTERN_YMDHM)
-                }
-            } else {
-                endCalendar.time = Date()
-            }
-            show(manager, className)
-        }
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        btnStartDate.isChecked = true
-        btnStartTime.isChecked = false
-        btnEndDate.isChecked = false
-        btnEndTime.isChecked = false
-        super.onDismiss(dialog)
-    }
-    /**
-     * 设置控件时间及限制范围
-     */
-    private fun setDpDate() {
-        if (btnStartDate.isChecked) {
-            dpDate.init(startCalendar.get(Calendar.YEAR), startCalendar.get(Calendar.MONTH), startCalendar.get(Calendar.DAY_OF_MONTH), this)
-            dpDate.minDate = startLimitCalendar.timeInMillis
-            dpDate.maxDate = endCalendar.timeInMillis
-        } else if (btnEndDate.isChecked) {
-            dpDate.init(endCalendar.get(Calendar.YEAR), endCalendar.get(Calendar.MONTH), endCalendar.get(Calendar.DAY_OF_MONTH), this)
-            dpDate.minDate = startCalendar.timeInMillis
-            dpDate.maxDate = endLimitCalendar.timeInMillis
-        }
-    }
-
     override fun onDateChanged(view: DatePicker?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
         if (btnStartDate.isChecked) {
             startCalendar.set(year, monthOfYear, dayOfMonth)
@@ -275,6 +212,90 @@ class DateTimeRangPickerDialog constructor(
             endCalendar.set(Calendar.HOUR_OF_DAY, view.hour)
             endCalendar.set(Calendar.MINUTE, view.minute)
             btnEndTime.text = Util.date2str(endCalendar.time, Util.DATE_PATTERN_HM)
+        }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        btnStartDate.isChecked = true
+        btnStartTime.isChecked = false
+        btnEndDate.isChecked = false
+        btnEndTime.isChecked = false
+        super.onDismiss(dialog)
+    }
+
+    /**
+     * 设置控件时间及限制范围
+     */
+    private fun setDpDate() {
+        if (btnStartDate.isChecked) {
+            dpDate.init(startCalendar.get(Calendar.YEAR), startCalendar.get(Calendar.MONTH), startCalendar.get(Calendar.DAY_OF_MONTH), this)
+            dpDate.minDate = startLimitCalendar.timeInMillis
+            dpDate.maxDate = endCalendar.timeInMillis
+        } else if (btnEndDate.isChecked) {
+            dpDate.init(endCalendar.get(Calendar.YEAR), endCalendar.get(Calendar.MONTH), endCalendar.get(Calendar.DAY_OF_MONTH), this)
+            dpDate.minDate = startCalendar.timeInMillis
+            dpDate.maxDate = endLimitCalendar.timeInMillis
+        }
+    }
+
+    fun setLimit(startLimit: String?, endLimit: String?) {
+        var startLimit = startLimit
+        var endLimit = endLimit
+        if (startLimit != null && endLimit != null) {
+            val s = Util.str2date(startLimit, Util.DATE_PATTERN_YMDHM)
+            val e = Util.str2date(endLimit, Util.DATE_PATTERN_YMDHM)
+            if (s != null && e != null) {
+                if (s.time > e.time) {
+                    //开始时间大于结束时间
+                    startLimit = null
+                    endLimit = null
+                }
+            }
+        }
+        if (startLimit != null) {
+            startLimit.apply {
+                Util.str2date(this, Util.DATE_PATTERN_YMDHM)?.apply {
+                    startLimitCalendar.time = this
+                }
+            }
+        } else {
+            startLimitCalendar.timeInMillis = 0
+        }
+        if (endLimit != null) {
+            endLimit.apply {
+                Util.str2date(this, Util.DATE_PATTERN_YMDHM)?.apply {
+                    endLimitCalendar.time = this
+                }
+            }
+        } else {
+            endLimitCalendar.timeInMillis = Long.MAX_VALUE
+        }
+    }
+
+    fun show(start: String?, end: String?, manager: FragmentManager) {
+        if (!this.isAdded) {
+            val startTemp = if (start != null) {
+                Util.str2date(start, Util.DATE_PATTERN_YMDHM) ?: Date()
+            } else {
+                Date()
+            }
+            if (startTemp.before(startLimitCalendar.time) || startTemp.after(endLimitCalendar.time)) {
+                startCalendar.time = startLimitCalendar.time
+            } else {
+                startCalendar.time = startTemp
+            }
+
+            val endTemp = if (end != null) {
+                Util.str2date(end, Util.DATE_PATTERN_YMDHM) ?: Date()
+            } else {
+                Date()
+            }
+            if (endTemp.before(startLimitCalendar.time) || endTemp.after(endLimitCalendar.time)) {
+                endCalendar.time = startLimitCalendar.time
+            } else {
+                endCalendar.time = endTemp
+            }
+            show(manager, className)
         }
     }
 }
