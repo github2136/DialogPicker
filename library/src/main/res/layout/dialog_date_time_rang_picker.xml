@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:gravity="center">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnStartDate"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
@@ -76,7 +76,7 @@
                 android:paddingRight="0dp"
                 tools:text="2022-12-22" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnStartTime"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
@@ -96,7 +96,7 @@
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="14sp" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEndDate"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
@@ -107,7 +107,7 @@
                 android:paddingRight="0dp"
                 tools:text="2022-12-22" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEndTime"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
