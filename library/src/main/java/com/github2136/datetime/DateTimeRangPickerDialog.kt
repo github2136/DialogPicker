@@ -24,7 +24,7 @@ import java.util.*
  * @param endLimit 结束范围
  */
 class DateTimeRangPickerDialog constructor(
-    var title: String = "请选择时间范围", startLimit: String? = null, endLimit: String? = null, onConfirm: (start: String, end: String) -> Unit
+    var title: String = "请选择日期时间范围", startLimit: String? = null, endLimit: String? = null, onConfirm: (start: String, end: String) -> Unit
 ) : DialogFragment(), View.OnClickListener, DatePicker.OnDateChangedListener, TimePicker.OnTimeChangedListener {
     private val className by lazy { javaClass.simpleName }
     private val startCalendar: Calendar = Calendar.getInstance()
@@ -274,6 +274,19 @@ class DateTimeRangPickerDialog constructor(
 
     fun show(start: String?, end: String?, manager: FragmentManager) {
         if (!this.isAdded) {
+            var start = start
+            var end = end
+            if (start != null && end != null) {
+                val s = Util.str2date(start, Util.DATE_PATTERN_YMDHM)
+                val e = Util.str2date(end, Util.DATE_PATTERN_YMDHM)
+                if (s != null && e != null) {
+                    if (s.time > e.time) {
+                        //开始时间大于结束时间
+                        start = null
+                        end = null
+                    }
+                }
+            }
             val startTemp = if (start != null) {
                 Util.str2date(start, Util.DATE_PATTERN_YMDHM) ?: Date()
             } else {

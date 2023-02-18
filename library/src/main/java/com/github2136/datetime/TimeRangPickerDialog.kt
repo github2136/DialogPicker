@@ -182,6 +182,19 @@ class TimeRangPickerDialog(
 
     fun show(start: String?, end: String?, manager: FragmentManager) {
         if (!this.isAdded) {
+            var start = start
+            var end = end
+            if (start != null && end != null) {
+                val s = Util.str2date(start, Util.DATE_PATTERN_HM)
+                val e = Util.str2date(end, Util.DATE_PATTERN_HM)
+                if (s != null && e != null) {
+                    if (s.time > e.time) {
+                        //开始时间大于结束时间
+                        start = null
+                        end = null
+                    }
+                }
+            }
             val startTemp = if (start != null) {
                 Util.str2date(start, Util.DATE_PATTERN_HM) ?: Date()
             } else {
