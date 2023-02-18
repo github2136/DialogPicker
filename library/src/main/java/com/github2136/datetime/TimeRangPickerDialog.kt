@@ -196,9 +196,9 @@ class TimeRangPickerDialog(
                 }
             }
             val startTemp = if (start != null) {
-                Util.str2date(start, Util.DATE_PATTERN_HM) ?: Date()
+                Util.str2date(start, Util.DATE_PATTERN_HM) ?: Util.str2date(Util.date2str(Date(), Util.DATE_PATTERN_HM), Util.DATE_PATTERN_HM)!!
             } else {
-                Date()
+                Util.str2date(Util.date2str(Date(), Util.DATE_PATTERN_HM), Util.DATE_PATTERN_HM)!!
             }
             if (startTemp.before(startLimitCalendar.time) || startTemp.after(endLimitCalendar.time)) {
                 startCalendar.time = startLimitCalendar.time
@@ -207,9 +207,9 @@ class TimeRangPickerDialog(
             }
 
             val endTemp = if (end != null) {
-                Util.str2date(end, Util.DATE_PATTERN_HM) ?: Date()
+                Util.str2date(end, Util.DATE_PATTERN_HM) ?: Util.str2date(Util.date2str(Date(), Util.DATE_PATTERN_HM), Util.DATE_PATTERN_HM)!!
             } else {
-                Date()
+                Util.str2date(Util.date2str(Date(), Util.DATE_PATTERN_HM), Util.DATE_PATTERN_HM)!!
             }
             if (endTemp.before(startLimitCalendar.time) || endTemp.after(endLimitCalendar.time)) {
                 endCalendar.time = startLimitCalendar.time

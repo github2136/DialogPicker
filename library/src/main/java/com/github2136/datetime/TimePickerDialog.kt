@@ -126,9 +126,9 @@ class TimePickerDialog(
     fun show(date: String?, manager: FragmentManager) {
         if (!this.isAdded) {
             val temp = if (date != null) {
-                Util.str2date(date, Util.DATE_PATTERN_HM) ?: Date()
+                Util.str2date(date, Util.DATE_PATTERN_HM) ?: Util.str2date(Util.date2str(Date(), Util.DATE_PATTERN_HM), Util.DATE_PATTERN_HM)!!
             } else {
-                Date()
+                Util.str2date(Util.date2str(Date(), Util.DATE_PATTERN_HM), Util.DATE_PATTERN_HM)!!
             }
             if (temp.before(startLimitCalendar.time) || temp.after(endLimitCalendar.time)) {
                 timeCalender.time = startLimitCalendar.time

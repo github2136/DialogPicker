@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.btn10 -> {
                 timeRangPickerDialog.setLimit("07:00", "21:00")
-                timeRangPickerDialog.show("12:00", "13:00", supportFragmentManager)
+                timeRangPickerDialog.show(null, null, supportFragmentManager)
             }
             R.id.btn11 -> {
                 dateTimePickerDialog.setLimit(null, null)
