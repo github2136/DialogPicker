@@ -11,13 +11,13 @@ class MainActivity : AppCompatActivity() {
     var selectData: MutableList<City> = mutableListOf()
     val dataLevelPickerDialog by lazy {
         val l5 = mutableListOf<City>()
-        repeat(2) { n ->
+        repeat(10) { n ->
             val l4 = mutableListOf<City>()
-            repeat(4) { l ->
+            repeat(10) { l ->
                 val l3 = mutableListOf<City>()
-                repeat(6) { k ->
+                repeat(10) { k ->
                     val l2 = mutableListOf<City>()
-                    repeat(8) { j ->
+                    repeat(10) { j ->
                         val l1 = mutableListOf<City>()
                         repeat(10) { i ->
                             l1.add(City("E$n$l$k$j$i", "E$n$l$k$j$i", null))
@@ -83,9 +83,9 @@ class MainActivity : AppCompatActivity() {
             R.id.btn2 -> {
                 if (selectData.isEmpty()) {
                     val d = mutableListOf<City>()
-                    d.add(City("A0", "", null))
-                    d.add(City("B01", "", null))
-                    d.add(City("C012", "", null))
+                    d.add(City("A9", "", null))
+                    d.add(City("B99", "", null))
+                    d.add(City("C999", "", null))
                     selectData.addAll(d)
                 }
                 dataLevelPickerDialog.show(selectData, supportFragmentManager)
