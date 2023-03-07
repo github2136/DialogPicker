@@ -152,7 +152,7 @@ class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, on
                 }
             }
             R.id.btnConfirm -> {
-                onConfirm?.invoke(selectData.toMutableList() as MutableList<T>)
+                onConfirm?.invoke(selectData.subList(0, level + 1).toMutableList() as MutableList<T>)
                 dismiss()
             }
             R.id.btnCancel -> {
