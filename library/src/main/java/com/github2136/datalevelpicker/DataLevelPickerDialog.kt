@@ -47,9 +47,10 @@ class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, on
                 level = if (data.isEmpty()) 0 else data.lastIndex
                 var list = dataLevel
                 for (d in data) {
-                    val sd = list.first { it.getId() == d.getId() }
-                    selectData.add(sd)
-                    sd.getChild()?.apply { list = this }
+                    list.firstOrNull { it.getId() == d.getId() }?.apply {
+                        selectData.add(this)
+                        this.getChild()?.apply { list = this }
+                    }
                 }
             }
             show(manager, className)
@@ -152,7 +153,12 @@ class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, on
                 }
             }
             R.id.btnConfirm -> {
-                onConfirm?.invoke(selectData.subList(0, llTitle.children.last { (it as CheckedTextView).isChecked }.tag.toString().toInt() + 1).toMutableList() as MutableList<T>)
+                val last = llTitle.children.lastOrNull { (it as CheckedTextView).isChecked }
+                if (last != null) {
+                    onConfirm?.invoke(selectData.subList(0, last.tag.toString().toInt() + 1).toMutableList() as MutableList<T>)
+                } else {
+                    onConfirm?.invoke(mutableListOf())
+                }
                 dismiss()
             }
             R.id.btnCancel -> {
