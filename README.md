@@ -12,7 +12,8 @@ implementation "androidx.core:core-ktx:1.5.0"
 
 * `DataLevelPickerDialog`：多级联动实体类实现`IDataLevel`接口，具体操作查看`MainActivity.kt`
 * `DatePickerDialog`：日期单选
-* `TimePickerDialog`：时间单选
 * `DateRangPickerDialog`：日期范围选择
-* `TimePickerDialog`：时间范围选择
+* `DateTimePickerDialog`：日期时间单选
 * `DateTimeRangPickerDialog`：日期时间范围选择
+* `TimePickerDialog`：时间单选
+* `TimePickerDialog`：时间范围选择
