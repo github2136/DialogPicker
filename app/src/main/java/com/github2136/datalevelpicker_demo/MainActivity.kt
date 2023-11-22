@@ -43,8 +43,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    val dateRangPickerDialog by lazy {
-        DateRangPickerDialog { start, end ->
+    val dateRangePickerDialog by lazy {
+        DateRangePickerDialog { start, end ->
             tv.text = "$start $end"
         }
     }
@@ -53,8 +53,8 @@ class MainActivity : AppCompatActivity() {
             tv.text = it
         }
     }
-    val timeRangPickerDialog by lazy {
-        TimeRangPickerDialog { start, end ->
+    val timeRangePickerDialog by lazy {
+        TimeRangePickerDialog { start, end ->
             tv.text = "$start $end"
         }
     }
@@ -63,8 +63,8 @@ class MainActivity : AppCompatActivity() {
             tv.text = it
         }
     }
-    val dateTimeRangPickerDialog by lazy {
-        DateTimeRangPickerDialog { start, end ->
+    val dateTimeRangePickerDialog by lazy {
+        DateTimeRangePickerDialog { start, end ->
             tv.text = "$start $end"
         }
     }
@@ -99,12 +99,12 @@ class MainActivity : AppCompatActivity() {
                 datePickerDialog.show("2023-12-01", supportFragmentManager)
             }
             R.id.btn5 -> {
-                dateRangPickerDialog.setLimit(null, null)
-                dateRangPickerDialog.show(null, null, supportFragmentManager)
+                dateRangePickerDialog.setLimit(null, null)
+                dateRangePickerDialog.show(null, null, supportFragmentManager)
             }
             R.id.btn6 -> {
-                dateRangPickerDialog.setLimit("2023-01-01", "2023-02-01")
-                dateRangPickerDialog.show("2023-01-02", "2023-01-05", supportFragmentManager)
+                dateRangePickerDialog.setLimit("2023-01-01", "2023-02-01")
+                dateRangePickerDialog.show("2023-01-02", "2023-01-05", supportFragmentManager)
             }
             R.id.btn7 -> {
                 timePickerDialog.setLimit(null, null)
@@ -115,12 +115,12 @@ class MainActivity : AppCompatActivity() {
                 timePickerDialog.show("12:00", supportFragmentManager)
             }
             R.id.btn9 -> {
-                timeRangPickerDialog.setLimit(null, null)
-                timeRangPickerDialog.show(null, null, supportFragmentManager)
+                timeRangePickerDialog.setLimit(null, null)
+                timeRangePickerDialog.show(null, null, supportFragmentManager)
             }
             R.id.btn10 -> {
-                timeRangPickerDialog.setLimit("07:00", "21:00")
-                timeRangPickerDialog.show(null, null, supportFragmentManager)
+                timeRangePickerDialog.setLimit("07:00", "21:00")
+                timeRangePickerDialog.show(null, null, supportFragmentManager)
             }
             R.id.btn11 -> {
                 dateTimePickerDialog.setLimit(null, null)
@@ -131,12 +131,12 @@ class MainActivity : AppCompatActivity() {
                 dateTimePickerDialog.show("2023-02-01 00:00", supportFragmentManager)
             }
             R.id.btn13 -> {
-                dateTimeRangPickerDialog.setLimit(null, null)
-                dateTimeRangPickerDialog.show("2023-01-01 12:00", "2023-01-01 13:00", supportFragmentManager)
+                dateTimeRangePickerDialog.setLimit(null, null)
+                dateTimeRangePickerDialog.show("2023-01-01 12:00", "2023-01-01 13:00", supportFragmentManager)
             }
             R.id.btn14 -> {
-                dateTimeRangPickerDialog.setLimit("2023-02-01 12:00", "2023-04-01 12:00")
-                dateTimeRangPickerDialog.show("2023-02-01 00:00", "2023-02-01 13:00", supportFragmentManager)
+                dateTimeRangePickerDialog.setLimit("2023-02-01 12:00", "2023-04-01 12:00")
+                dateTimeRangePickerDialog.show("2023-02-01 00:00", "2023-02-01 13:00", supportFragmentManager)
             }
         }
     }

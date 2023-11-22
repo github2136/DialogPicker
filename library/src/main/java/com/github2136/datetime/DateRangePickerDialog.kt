@@ -24,7 +24,7 @@ import kotlin.math.min
  * @param startLimit 开始范围
  * @param endLimit 结束范围
  */
-class DateRangPickerDialog constructor(
+class DateRangePickerDialog constructor(
     var title: String = "请选择日期范围", startLimit: String? = null, endLimit: String? = null, onConfirm: (start: String, end: String) -> Unit
 ) : DialogFragment(), View.OnClickListener, DatePicker.OnDateChangedListener {
     private val className by lazy { javaClass.simpleName }

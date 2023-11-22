@@ -23,7 +23,7 @@ import java.util.*
  * @param startLimit 开始范围
  * @param endLimit 结束范围
  */
-class DateTimeRangPickerDialog constructor(
+class DateTimeRangePickerDialog constructor(
     var title: String = "请选择日期时间范围", startLimit: String? = null, endLimit: String? = null, onConfirm: (start: String, end: String) -> Unit
 ) : DialogFragment(), View.OnClickListener, DatePicker.OnDateChangedListener, TimePicker.OnTimeChangedListener {
     private val className by lazy { javaClass.simpleName }

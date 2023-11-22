@@ -22,7 +22,7 @@ import java.util.*
  * @param startLimit 开始范围
  * @param endLimit 结束范围
  */
-class TimeRangPickerDialog(
+class TimeRangePickerDialog(
     var title: String = "请选择时间范围", startLimit: String? = null, endLimit: String? = null, onConfirm: (start: String, end: String) -> Unit
 ) : DialogFragment(), View.OnClickListener, TimePicker.OnTimeChangedListener {
     private val className by lazy { javaClass.simpleName }

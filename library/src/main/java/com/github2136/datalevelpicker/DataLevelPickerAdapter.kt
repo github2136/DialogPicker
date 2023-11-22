@@ -6,7 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckedTextView
+import android.widget.ImageView
 import androidx.annotation.IdRes
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 
@@ -18,14 +21,6 @@ class DataLevelPickerAdapter(var list: MutableList<IDataLevel>? = null) : Recycl
     lateinit var mLayoutInflater: LayoutInflater
     private lateinit var context: Context
     var selectId = "" //选中的项
-    private val selectColor by lazy {
-        //选中颜色
-        MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, 0)
-    }
-    private val unSelectColor by lazy {
-        //未选中颜色
-        MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnSurface, 0)
-    }
 
     protected var itemClickListener: ((Int) -> Unit)? = null
 
@@ -42,12 +37,13 @@ class DataLevelPickerAdapter(var list: MutableList<IDataLevel>? = null) : Recycl
         list?.get(position)?.let { item ->
             holder.getView<CheckedTextView>(R.id.ctvItem)?.apply {
                 text = item.getText()
+                isChecked = selectId == item.getId()
+            }
+            holder.getView<ImageView>(R.id.iv)?.apply {
                 if (selectId == item.getId()) {
-                    setTextColor(selectColor)
-                    setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_dlp_check, 0)
+                    isVisible = true
                 } else {
-                    setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
-                    setTextColor(unSelectColor)
+                    isInvisible = true
                 }
             }
         }
