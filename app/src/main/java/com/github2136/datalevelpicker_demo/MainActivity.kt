@@ -4,11 +4,21 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.github2136.datalevelpicker.DataLevelDynamicPickerDialog
 import com.github2136.datalevelpicker.DataLevelPickerDialog
-import com.github2136.datetime.*
+import com.github2136.datetime.DatePickerDialog
+import com.github2136.datetime.DateRangePickerDialog
+import com.github2136.datetime.DateTimePickerDialog
+import com.github2136.datetime.DateTimeRangePickerDialog
+import com.github2136.datetime.TimePickerDialog
+import com.github2136.datetime.TimeRangePickerDialog
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
+import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity() {
     var selectData: MutableList<City> = mutableListOf()
+    val db by lazy { DB(this) }
     val dataLevelPickerDialog by lazy {
         val l5 = mutableListOf<City>()
         repeat(10) { n ->
@@ -35,6 +45,11 @@ class MainActivity : AppCompatActivity() {
             this.selectData = data
             tv.text = data.joinToString { it.getText() }
         }
+    }
+    val dataLevelDynamicPickerDialog by lazy {
+        DataLevelDynamicPickerDialog<City>(
+            onItemSelected = {},
+            onConfirm = {})
     }
     lateinit var tv: TextView
     val datePickerDialog by lazy {
@@ -73,6 +88,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         tv = findViewById(R.id.tv)
+
+        val dbFile = getDatabasePath("areacode.db")
+        if (!dbFile.exists()) {
+            val inputStream = resources.openRawResource(R.raw.areacode)
+            val bis = BufferedInputStream(inputStream)
+            bis.use {
+                val outputStream = FileOutputStream(dbFile)
+                val bos = BufferedOutputStream(outputStream)
+                bos.use {
+                    val bytes = ByteArray(8 * 1024)
+                    var len = bis.read(bytes)
+                    while (len > 0) {
+                        bos.write(bytes)
+                        len = bis.read(bytes)
+                    }
+                    bos.flush()
+                }
+            }
+        }
     }
 
     fun onClick(view: View) {
@@ -138,6 +172,10 @@ class MainActivity : AppCompatActivity() {
                 dateTimeRangePickerDialog.setLimit("2023-02-01 12:00", "2023-04-01 12:00")
                 dateTimeRangePickerDialog.show("2023-02-01 00:00", "2023-02-01 13:00", supportFragmentManager)
             }
+            R.id.btn15 -> {
+                // dataLevelDynamicPickerDialog.show()
+            }
+            R.id.btn16 -> {}
         }
     }
 }
