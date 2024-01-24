@@ -7,18 +7,18 @@ import android.database.sqlite.SQLiteOpenHelper
 /**
  * Created by 44569 on 2023/12/28
  */
-class DB(context: Context) : SQLiteOpenHelper(context, "AreaCode", null, 1) {
+class DB(context: Context) : SQLiteOpenHelper(context, NAME, null, 1) {
     override fun onCreate(db: SQLiteDatabase) {
-        db.execSQL(
-            "CREATE TABLE AreaCode (\n" +
-                "    ParentCode TEXT,\n" +
-                "    AreaCode   TEXT    PRIMARY KEY,\n" +
-                "    AreaName   TEXT,\n" +
-                "    Level      INTEGER,\n" +
-                "    Type       TEXT,\n" +
-                "    Sort       INTEGER\n" +
-                ");\n"
-        )
+        // db.execSQL(
+        //     "CREATE TABLE AreaCode (\n" +
+        //         "    ParentCode TEXT,\n" +
+        //         "    AreaCode   TEXT    PRIMARY KEY,\n" +
+        //         "    AreaName   TEXT,\n" +
+        //         "    Level      INTEGER,\n" +
+        //         "    Type       TEXT,\n" +
+        //         "    Sort       INTEGER\n" +
+        //         ");\n"
+        // )
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -26,7 +26,8 @@ class DB(context: Context) : SQLiteOpenHelper(context, "AreaCode", null, 1) {
     }
 
     fun getAreaCode(areacode: String): MutableList<AreaCode> {
-        val cursor = readableDatabase.query("areacode", arrayOf("ParentCode", "AreaCode", "AreaName", "Level", "Type", "Sort"), "ParentCode = ?", arrayOf(areacode), null, null, "Sort")
+        // val cursor = readableDatabase.query("AreaCode", arrayOf("ParentCode", "AreaCode", "AreaName", "Level", "Type", "Sort"), "ParentCode = ?", arrayOf(areacode), null, null, "Sort")
+        val cursor = readableDatabase.rawQuery("select * from areacode where ParentCode = '$areacode' order by sort",null)
         cursor.moveToFirst()
 
         val ParentCodeIndex = cursor.getColumnIndex("ParentCode")
@@ -49,5 +50,20 @@ class DB(context: Context) : SQLiteOpenHelper(context, "AreaCode", null, 1) {
         cursor.close()
 
         return list
+    }
+
+    fun getAreaCodeList(areacode: String, limitLevel: Int): MutableList<AreaCode> {
+        return getAreaCode(areacode).apply {
+            firstOrNull()?.let {
+                if (it.Level != limitLevel) {
+                    this.forEach {
+                        it.next = getAreaCodeList(it.AreaCode, limitLevel)
+                    }
+                }
+            }
+        }
+    }
+    companion object{
+        const val NAME = "areacode.db"
     }
 }

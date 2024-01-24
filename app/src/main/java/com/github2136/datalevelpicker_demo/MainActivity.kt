@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.github2136.datalevelpicker.DataLevelDynamicPickerDialog
 import com.github2136.datalevelpicker.DataLevelPickerDialog
 import com.github2136.datetime.DatePickerDialog
 import com.github2136.datetime.DateRangePickerDialog
@@ -17,39 +16,13 @@ import java.io.BufferedOutputStream
 import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity() {
-    var selectData: MutableList<City> = mutableListOf()
+    var selectData: MutableList<AreaCode> = mutableListOf()
     val db by lazy { DB(this) }
     val dataLevelPickerDialog by lazy {
-        val l5 = mutableListOf<City>()
-        repeat(10) { n ->
-            val l4 = mutableListOf<City>()
-            repeat(10) { l ->
-                val l3 = mutableListOf<City>()
-                repeat(10) { k ->
-                    val l2 = mutableListOf<City>()
-                    repeat(10) { j ->
-                        val l1 = mutableListOf<City>()
-                        repeat(10) { i ->
-                            l1.add(City("E$n$l$k$j$i", "E$n$l$k$j$i", null))
-                        }
-                        l2.add(City("D$n$l$k$j", "D$n$l$k$j", l1))
-                    }
-                    l3.add(City("C$n$l$k", "C$n$l$k", l2))
-                }
-                l4.add(City("B$n$l", "B$n$l", l3))
-            }
-            l5.add(City("A$n", "A$n", l4))
-        }
-
-        DataLevelPickerDialog(l5) { data ->
+        DataLevelPickerDialog(db.getAreaCodeList("110000", 2)) { data ->
             this.selectData = data
             tv.text = data.joinToString { it.getText() }
         }
-    }
-    val dataLevelDynamicPickerDialog by lazy {
-        DataLevelDynamicPickerDialog<City>(
-            onItemSelected = {},
-            onConfirm = {})
     }
     lateinit var tv: TextView
     val datePickerDialog by lazy {
@@ -89,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         tv = findViewById(R.id.tv)
 
-        val dbFile = getDatabasePath("areacode.db")
+        val dbFile = getDatabasePath(DB.NAME)
         if (!dbFile.exists()) {
             val inputStream = resources.openRawResource(R.raw.areacode)
             val bis = BufferedInputStream(inputStream)
@@ -116,11 +89,11 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.btn2 -> {
                 if (selectData.isEmpty()) {
-                    val d = mutableListOf<City>()
-                    d.add(City("A9", "", null))
-                    d.add(City("B99", "", null))
-                    d.add(City("C999", "", null))
-                    selectData.addAll(d)
+                    // val d = mutableListOf<AreaCode>()
+                    // d.add(City("A9", "", null))
+                    // d.add(City("B99", "", null))
+                    // d.add(City("C999", "", null))
+                    // selectData.addAll(d)
                 }
                 dataLevelPickerDialog.show(selectData, supportFragmentManager)
             }
@@ -172,10 +145,6 @@ class MainActivity : AppCompatActivity() {
                 dateTimeRangePickerDialog.setLimit("2023-02-01 12:00", "2023-04-01 12:00")
                 dateTimeRangePickerDialog.show("2023-02-01 00:00", "2023-02-01 13:00", supportFragmentManager)
             }
-            R.id.btn15 -> {
-                // dataLevelDynamicPickerDialog.show()
-            }
-            R.id.btn16 -> {}
         }
     }
 }

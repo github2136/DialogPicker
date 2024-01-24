@@ -16,5 +16,5 @@ interface IDataLevel {
     /**
      * 下级选项
      */
-    fun getChild(): MutableList<IDataLevel>?
+    fun getChild(): MutableList<out IDataLevel>?
 }

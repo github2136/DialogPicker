@@ -49,7 +49,7 @@ class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, on
                 for (d in data) {
                     list.firstOrNull { it.getId() == d.getId() }?.apply {
                         selectData.add(this)
-                        this.getChild()?.apply { list = this }
+                        this.getChild()?.apply { list = this as MutableList<IDataLevel> }
                     }
                 }
             }
@@ -93,7 +93,7 @@ class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, on
                     adapter = DataLevelPickerAdapter(list).apply { selectId = item.getId() }
                     rvList.scrollToPosition(list.indexOfFirst { it.getId() == item.getId() })
                 } else {
-                    item.getChild()?.apply { list = this }
+                    item.getChild()?.apply { list = this as MutableList<IDataLevel> }
                 }
             }
         }
@@ -120,7 +120,7 @@ class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, on
                 //展示下一级
                 level++
                 adapter.selectId = ""
-                adapter.setData(this)
+                adapter.setData(this as MutableList<IDataLevel>)
                 rvList.scrollToPosition(0)
             } ?: let {
                 //切换选中的最后一级
@@ -147,7 +147,7 @@ class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, on
                             adapter.setData(list)
                             rvList.scrollToPosition(list.indexOfFirst { it.getId() == item.getId() })
                         } else {
-                            item.getChild()?.apply { list = this }
+                            item.getChild()?.apply { list = this as MutableList<IDataLevel> }
                         }
                     }
                 }
