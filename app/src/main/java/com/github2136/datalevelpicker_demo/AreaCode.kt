@@ -10,7 +10,7 @@ data class AreaCode(
     var AreaCode: String,
     var AreaName: String,
     var Level: Int,
-    var Type: String,
+    var Type: String?,
     var Sort: Int
 ) : IDataLevel {
     override fun getId() = AreaCode

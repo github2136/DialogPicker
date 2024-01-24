@@ -3,6 +3,7 @@ package com.github2136.datalevelpicker_demo
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github2136.datalevelpicker.DataLevelPickerDialog
 import com.github2136.datetime.DatePickerDialog
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     var selectData: MutableList<AreaCode> = mutableListOf()
     val db by lazy { DB(this) }
     val dataLevelPickerDialog by lazy {
-        DataLevelPickerDialog(db.getAreaCodeList("110000", 2)) { data ->
+        DataLevelPickerDialog(db.getAreaCodeList("", 2)) { data ->
             this.selectData = data
             tv.text = data.joinToString { it.getText() }
         }
@@ -79,6 +80,7 @@ class MainActivity : AppCompatActivity() {
                     bos.flush()
                 }
             }
+            Toast.makeText(this, "文件复制完成", Toast.LENGTH_SHORT).show()
         }
     }
 
