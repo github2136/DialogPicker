@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     var selectData: MutableList<AreaCode> = mutableListOf()
     val db by lazy { DB(this) }
     val dataLevelPickerDialog by lazy {
-        DataLevelPickerDialog(db.getAreaCodeList("", 2)) { data ->
+        DataLevelPickerDialog(db.getAreaCodeList("")) { data ->
             this.selectData = data
             tv.text = data.joinToString { it.getText() }
         }
@@ -89,6 +89,7 @@ class MainActivity : AppCompatActivity() {
             R.id.btn1 -> {
                 dataLevelPickerDialog.show(null, supportFragmentManager)
             }
+
             R.id.btn2 -> {
                 if (selectData.isEmpty()) {
                     // val d = mutableListOf<AreaCode>()
@@ -99,50 +100,62 @@ class MainActivity : AppCompatActivity() {
                 }
                 dataLevelPickerDialog.show(selectData, supportFragmentManager)
             }
+
             R.id.btn3 -> {
                 datePickerDialog.setLimit(null, null)
                 datePickerDialog.show(null, supportFragmentManager)
             }
+
             R.id.btn4 -> {
                 datePickerDialog.setLimit("2022-12-01", "2023-12-01")
                 datePickerDialog.show("2023-12-01", supportFragmentManager)
             }
+
             R.id.btn5 -> {
                 dateRangePickerDialog.setLimit(null, null)
                 dateRangePickerDialog.show(null, null, supportFragmentManager)
             }
+
             R.id.btn6 -> {
                 dateRangePickerDialog.setLimit("2023-01-01", "2023-02-01")
                 dateRangePickerDialog.show("2023-01-02", "2023-01-05", supportFragmentManager)
             }
+
             R.id.btn7 -> {
                 timePickerDialog.setLimit(null, null)
                 timePickerDialog.show(null, supportFragmentManager)
             }
+
             R.id.btn8 -> {
                 timePickerDialog.setLimit("07:00", "21:00")
                 timePickerDialog.show("12:00", supportFragmentManager)
             }
+
             R.id.btn9 -> {
                 timeRangePickerDialog.setLimit(null, null)
                 timeRangePickerDialog.show(null, null, supportFragmentManager)
             }
+
             R.id.btn10 -> {
                 timeRangePickerDialog.setLimit("07:00", "21:00")
                 timeRangePickerDialog.show(null, null, supportFragmentManager)
             }
+
             R.id.btn11 -> {
                 dateTimePickerDialog.setLimit(null, null)
                 dateTimePickerDialog.show(null, supportFragmentManager)
             }
+
             R.id.btn12 -> {
                 dateTimePickerDialog.setLimit("2023-02-01 12:00", "2023-04-01 12:00")
                 dateTimePickerDialog.show("2023-02-01 00:00", supportFragmentManager)
             }
+
             R.id.btn13 -> {
                 dateTimeRangePickerDialog.setLimit(null, null)
                 dateTimeRangePickerDialog.show("2023-01-01 12:00", "2023-01-01 13:00", supportFragmentManager)
             }
+
             R.id.btn14 -> {
                 dateTimeRangePickerDialog.setLimit("2023-02-01 12:00", "2023-04-01 12:00")
                 dateTimeRangePickerDialog.show("2023-02-01 00:00", "2023-02-01 13:00", supportFragmentManager)
