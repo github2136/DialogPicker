@@ -91,13 +91,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.btn2 -> {
-                if (selectData.isEmpty()) {
-                    // val d = mutableListOf<AreaCode>()
-                    // d.add(City("A9", "", null))
-                    // d.add(City("B99", "", null))
-                    // d.add(City("C999", "", null))
-                    // selectData.addAll(d)
-                }
                 dataLevelPickerDialog.show(selectData, supportFragmentManager)
             }
 
