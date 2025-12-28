@@ -4,7 +4,11 @@ import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.CheckedTextView
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
@@ -19,10 +23,10 @@ import com.github2136.Util
 
 /**
  * Created by YB on 2022/12/5
- * 级联菜单选择
- * @param data 多级数据
+ * 延迟级联菜单选择
  */
-class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, val onConfirm: (data: MutableList<T>) -> Unit) : DialogFragment(), View.OnClickListener {
+class DataLevelLazyPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, val getNextData: ((item: T) -> Unit), val onConfirm: (data: MutableList<T>) -> Unit) : DialogFragment(),
+    View.OnClickListener {
     private val className by lazy { javaClass.simpleName }
     private var dataLevel: MutableList<IDataLevel> = mutableListOf()
     private var selectData = mutableListOf<IDataLevel>() //选中的集合
@@ -35,7 +39,7 @@ class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, va
     private lateinit var adapter: DataLevelPickerAdapter
 
     init {
-        dataLevel.addAll(data)
+        this.dataLevel.addAll(data)
     }
 
     fun show(data: MutableList<T>?, manager: FragmentManager) {
@@ -114,20 +118,37 @@ class DataLevelPickerDialog<T : IDataLevel> constructor(data: MutableList<T>, va
                 setTitleCheck(llTitle, level)
                 hsvTitle.postDelayed({ hsvTitle.fullScroll(HorizontalScrollView.FOCUS_RIGHT) }, 100)
             }
-            item.getChild()?.apply {
-                //展示下一级
-                level++
-                adapter.selectId = ""
-                adapter.setData(this as MutableList<IDataLevel>)
-                rvList.scrollToPosition(0)
-            } ?: let {
-                //切换选中的最后一级
-                adapter.selectId = item.getId()
-                adapter.notifyDataSetChanged()
+            if (item.success) {
+                setNextAdapter(item as T)
+            } else {
+                getNextData(item as T)
             }
+
         }
         rvList.adapter = adapter
         return view
+    }
+
+    fun setChild(success: Boolean, childs: MutableList<T>?) {
+        if (success) {
+            selectData.last().success = success
+            selectData.last().setChild(childs as MutableList<IDataLevel>?)
+            setNextAdapter(selectData.last() as T)
+        }
+    }
+
+    private fun setNextAdapter(item: T) {
+        item.getChild()?.apply {
+            //展示下一级
+            level++
+            adapter.selectId = ""
+            adapter.setData(this as MutableList<IDataLevel>)
+            rvList.scrollToPosition(0)
+        } ?: let {
+            //切换选中的最后一级
+            adapter.selectId = item.getId()
+            adapter.notifyDataSetChanged()
+        }
     }
 
     override fun onClick(v: View) {

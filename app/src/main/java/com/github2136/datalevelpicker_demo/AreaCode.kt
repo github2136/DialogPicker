@@ -11,13 +11,20 @@ data class AreaCode(
     var AreaName: String,
     var Level: Int,
     var Type: String?,
-    var Sort: Int
-) : IDataLevel {
+    var Sort: Int,
+) : IDataLevel() {
+
     override fun getId() = AreaCode
 
     override fun getText() = AreaName
     var next: MutableList<AreaCode>? = null
+
     override fun getChild(): MutableList<AreaCode>? {
         return next
+    }
+
+    override var success: Boolean = false
+    override fun setChild(data: MutableList<IDataLevel>?) {
+        next = data as MutableList<AreaCode>?
     }
 }

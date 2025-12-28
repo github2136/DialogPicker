@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.github2136.datalevelpicker.DataLevelLazyPickerDialog
 import com.github2136.datalevelpicker.DataLevelPickerDialog
 import com.github2136.datetime.DatePickerDialog
 import com.github2136.datetime.DateRangePickerDialog
@@ -25,6 +26,22 @@ class MainActivity : AppCompatActivity() {
             tv.text = data.joinToString { it.getText() }
         }
     }
+    val dataLevelLazyPickerDialog by lazy {
+        DataLevelLazyPickerDialog(
+            db.getLazyAreaCodeList("")!!,
+            getNextData = { item ->
+                getNext(item)
+            },
+        ) { data ->
+            this.selectData = data
+            tv.text = data.joinToString { it.getText() }
+        }
+    }
+
+    fun getNext(item: AreaCode) {
+        dataLevelLazyPickerDialog.setChild(true, db.getLazyAreaCodeList(item.AreaCode))
+    }
+
     lateinit var tv: TextView
     val datePickerDialog by lazy {
         DatePickerDialog {
@@ -91,16 +108,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.btn2 -> {
-                if (selectData.isEmpty()) {
-                    // val d = mutableListOf<AreaCode>()
-                    // d.add(City("A9", "", null))
-                    // d.add(City("B99", "", null))
-                    // d.add(City("C999", "", null))
-                    // selectData.addAll(d)
-                }
                 dataLevelPickerDialog.show(selectData, supportFragmentManager)
             }
-
+            R.id.btn15 -> {
+                dataLevelLazyPickerDialog.show(null, supportFragmentManager)
+            }
             R.id.btn3 -> {
                 datePickerDialog.setLimit(null, null)
                 datePickerDialog.show(null, supportFragmentManager)
