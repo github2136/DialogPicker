@@ -32,10 +32,11 @@ class MainActivity : AppCompatActivity() {
             getNextData = { item ->
                 getNext(item)
             },
-        ) { data ->
-            this.selectData = data
-            tv.text = data.joinToString { it.getText() }
-        }
+            onConfirm = { data ->
+                this.selectData = data
+                tv.text = data.joinToString { it.getText() }
+            }
+        )
     }
 
     fun getNext(item: AreaCode) {
