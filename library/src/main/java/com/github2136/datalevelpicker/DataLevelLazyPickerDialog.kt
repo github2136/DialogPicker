@@ -30,6 +30,7 @@ class DataLevelLazyPickerDialog<T : IDataLevel> constructor(data: MutableList<T>
     private val className by lazy { javaClass.simpleName }
     private var dataLevel: MutableList<IDataLevel> = mutableListOf()
     private var selectData = mutableListOf<IDataLevel>() //选中的集合
+    private var minLevel = 0 //最小可确定等级
     private var level = 0 //当前操作等级
     private lateinit var hsvTitle: HorizontalScrollView //顶部选中滚动控件
     private lateinit var llTitle: LinearLayout //顶部选择
@@ -41,7 +42,12 @@ class DataLevelLazyPickerDialog<T : IDataLevel> constructor(data: MutableList<T>
     init {
         this.dataLevel.addAll(data)
     }
-
+    /**
+     * 设置最小确定等级
+     */
+    fun setMinLevel(minLevel: Int) {
+        this.minLevel = minLevel
+    }
     fun show(data: MutableList<T>?, manager: FragmentManager) {
         if (!this.isAdded) {
             selectData.clear()
@@ -76,6 +82,8 @@ class DataLevelLazyPickerDialog<T : IDataLevel> constructor(data: MutableList<T>
         btnCancel.setOnClickListener(this)
         if (selectData.isEmpty()) {
             btnConfirm.isEnabled = false
+        } else if (selectData.size - 1 < minLevel) {
+            btnConfirm.isEnabled = false
         }
         rvList.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         llTitle.post {
@@ -101,7 +109,7 @@ class DataLevelLazyPickerDialog<T : IDataLevel> constructor(data: MutableList<T>
         }
         adapter.setOnItemClickListener { position ->
             val item = adapter.getItem(position)!!
-            btnConfirm.isEnabled = true
+            btnConfirm.isEnabled = level >= minLevel
             if (level >= selectData.size) {
                 //添加title
                 selectData.add(item)
@@ -157,6 +165,7 @@ class DataLevelLazyPickerDialog<T : IDataLevel> constructor(data: MutableList<T>
                 val ctv = v as CheckedTextView
                 val clickLevel = ctv.tag as Int
                 level = clickLevel
+                btnConfirm.isEnabled = level >= minLevel
                 if (!v.isChecked) {
                     setTitleCheck(llTitle, clickLevel)
                     var list = dataLevel

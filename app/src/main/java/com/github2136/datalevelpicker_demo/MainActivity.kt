@@ -24,6 +24,8 @@ class MainActivity : AppCompatActivity() {
         DataLevelPickerDialog(db.getAreaCodeList("")) { data ->
             this.selectData = data
             tv.text = data.joinToString { it.getText() }
+        }.apply {
+            setMinLevel(1)
         }
     }
     val dataLevelLazyPickerDialog by lazy {
